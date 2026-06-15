@@ -35,7 +35,7 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0rem;
   --sidebar: #F5F2F0;
   --sidebar-foreground: #171717;
   --sidebar-primary: #171717;
@@ -136,5 +136,23 @@
 
   html {
     @apply font-sans;
+  }
+}
+
+/* Custom cursor CSS rules to hide standard cursor on desktop devices */
+@media (hover: hover) and (pointer: fine) {
+  body.custom-cursor-active {
+    cursor: none !important;
+  }
+  body.custom-cursor-active * {
+    cursor: none !important;
+  }
+  /* Keep standard text cursor for inputs that require text selection */
+  body.custom-cursor-active input[type="text"],
+  body.custom-cursor-active input[type="password"],
+  body.custom-cursor-active input[type="email"],
+  body.custom-cursor-active input[type="search"],
+  body.custom-cursor-active textarea {
+    cursor: text !important;
   }
 }

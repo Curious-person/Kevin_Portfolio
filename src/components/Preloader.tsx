@@ -75,9 +75,9 @@ export default function Preloader({ onComplete }: PreloaderProps) {
     >
       {/* Ellipsis dots */}
       <div ref={dotsRef} className="flex items-center gap-3">
-        <span className="dot h-3 w-3 rounded-full bg-foreground" />
-        <span className="dot h-3 w-3 rounded-full bg-foreground" />
-        <span className="dot h-3 w-3 rounded-full bg-foreground" />
+        <span className="dot h-3 w-3 bg-foreground" />
+        <span className="dot h-3 w-3 bg-foreground" />
+        <span className="dot h-3 w-3 bg-foreground" />
       </div>
 
       {/* Screen-reader text */}

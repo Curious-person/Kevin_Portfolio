@@ -219,7 +219,8 @@ export default function DustToText({
     <div
       ref={stageRef}
       style={{ background: bg }}
-      className="relative flex min-h-[340px] w-full flex-col items-center justify-center overflow-hidden rounded-xl px-8 py-12"
+      data-theme="dark"
+      className="relative flex min-h-[340px] w-full flex-col items-center justify-center overflow-hidden px-8 py-12"
     >
       {/* particle canvas */}
       <canvas
@@ -272,7 +273,7 @@ export default function DustToText({
           border: "0.5px solid #444",
           color: "#aaa",
           padding: "8px 20px",
-          borderRadius: "8px",
+          borderRadius: "0px",
           fontSize: "13px",
           cursor: "pointer",
           fontFamily: "Inter, sans-serif",

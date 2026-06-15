@@ -44,7 +44,7 @@ export default function AboutSection() {
     >
       <div 
         ref={contentRef}
-        className="max-w-4xl w-full text-center p-12 md:p-20 rounded-[2rem] bg-card border border-border/50 shadow-2xl shadow-primary/5"
+        className="max-w-4xl w-full text-center p-12 md:p-20 bg-card border border-border/50 shadow-2xl shadow-primary/5"
       >
         <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6">
           About me

@@ -137,14 +137,15 @@ export default function Home() {
         <div ref={pinRef} className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
           <div
             ref={containerRef}
-            className="w-[50%] h-[35vh] bg-[#0c0c0c] text-white rounded-3xl flex items-center justify-center shadow-2xl relative overflow-hidden border border-white/10"
+            className="w-[50%] h-[35vh] bg-[#0c0c0c] text-white flex items-center justify-center shadow-2xl relative overflow-hidden border border-white/10"
             style={{ transformOrigin: "center center" }}
+            data-theme="dark"
           >
             {/* Teaser Content - visible before zooming */}
             <div className="teaser-content absolute flex flex-col items-center justify-center text-center px-6 pointer-events-none">
               <span className="text-xs font-semibold tracking-[0.2em] text-neutral-400 uppercase mb-2">Next Project</span>
               <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">SUMING INK</h2>
-              <div className="flex items-center gap-2 text-xs text-neutral-400 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+              <div className="flex items-center gap-2 text-xs text-neutral-400 bg-white/5 border border-white/10 px-3 py-1.5">
                 <span>Scroll to enter</span>
                 <span className="animate-bounce font-bold">↓</span>
               </div>
