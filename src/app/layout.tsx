@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
-import CustomCursor from "@/components/CustomCursor";
 
-const inter = Inter({
+const outfit = Outfit({
   variable: "--font-sans",
   subsets: ["latin"],
 });
@@ -21,10 +20,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} h-full antialiased`}
+      className={`${outfit.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <CustomCursor />
         {children}
       </body>
     </html>
