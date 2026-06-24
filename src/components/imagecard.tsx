@@ -3,6 +3,7 @@
 import { useRef } from "react"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
+import { ArrowUpRight } from "lucide-react"
 
 gsap.registerPlugin(useGSAP)
 
@@ -12,8 +13,8 @@ interface ImageCardProps {
     description?: string
 }
 
-export default function ImageCard({ 
-    imageSource = "https://placehold.co/600x450/1f2937/ffffff?text=No+Image",
+export default function ImageCard({
+    imageSource,
     title = "Project Name",
     description = "Project Description"
 }: ImageCardProps) {
@@ -50,8 +51,26 @@ export default function ImageCard({
     })
 
     useGSAP(() => {
-        gsap.set(textRef.current, { yPercent: 100 })
+        if (imageSource) {
+            gsap.set(textRef.current, { yPercent: 100 })
+        }
     }, { scope: cardRef })
+
+    if (!imageSource) {
+        return (
+            <div className="bg-gray-800 rounded-lg overflow-hidden cursor-pointer aspect-[4/3] w-full p-6 md:p-8 flex flex-col justify-between group hover:bg-gray-700 transition-colors">
+                <div className="flex flex-col text-left">
+                    <h2 className="text-white font-bold text-3xl md:text-4xl">{title}</h2>
+                    <p className="text-gray-400 text-lg mt-3 max-w-[90%]">{description}</p>
+                </div>
+                <div className="flex justify-end">
+                    <div className="bg-white text-black p-3 rounded-full opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300">
+                        <ArrowUpRight className="w-6 h-6" />
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div
@@ -60,13 +79,24 @@ export default function ImageCard({
             onMouseEnter={onEnter}
             onMouseLeave={onLeave}
         >
-            {/* Image */}
+            {/* Media (Image/Video) */}
             <div ref={imgWrapRef} className="aspect-[4/3] w-full">
-                <img
-                    src={imageSource}
-                    alt=""
-                    className="w-full h-full object-cover"
-                />
+                {imageSource.match(/\.(mp4|webm|ogg|mov)(\?.*)?$/i) ? (
+                    <video
+                        src={imageSource}
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                    />
+                ) : (
+                    <img
+                        src={imageSource}
+                        alt=""
+                        className="w-full h-full object-cover"
+                    />
+                )}
             </div>
 
             {/* Text revealed on hover — absolute so it adds no layout height */}
