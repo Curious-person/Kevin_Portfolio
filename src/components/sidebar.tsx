@@ -14,7 +14,7 @@ export default function Sidebar() {
     }
 
     return (
-        <aside className="w-120 bg-background h-screen sticky top-0">
+        <aside className="w-100 bg-background h-screen sticky top-0">
             <div className="p-8 flex flex-col gap-16 h-screen justify-between">
                 {/* header */}
                 <div className="flex flex-col gap-4 items-start">
