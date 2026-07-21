@@ -1,14 +1,21 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { PortfolioNav } from "@/components/portfolio-nav";
-
-const heroTexture = "https://www.figma.com/api/mcp/asset/6f79f46d-a9b4-46f2-b63f-fc162b3a39dc";
-const cardTexture = "https://www.figma.com/api/mcp/asset/a96ca185-a061-4d15-b5f7-82de2258258b";
-const githubIcon = "https://www.figma.com/api/mcp/asset/334effc4-2810-4a7c-bfc9-0bc867779d5c";
-const linkedinIcon = "https://www.figma.com/api/mcp/asset/79dc6d3c-400b-49a7-a019-960f128a13fe";
-const facebookIcon = "https://www.figma.com/api/mcp/asset/cc52187f-0847-4b03-bc53-7055d5f2ba6c";
-const instagramIcon = "https://www.figma.com/api/mcp/asset/873921ee-4f76-47e5-9015-12fe7d742968";
-const arrowRightIcon = "https://www.figma.com/api/mcp/asset/89ba94b2-7af9-43f5-b345-2f5b31d26f7c";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { SkillsTicker } from "@/components/skills-ticker";
+import { StatCard } from "@/components/stat-card";
+import { ProjectCard } from "@/components/project-card";
+import { SocialIcon } from "@/components/social-icon";
+import {
+  arrowRightIcon,
+  githubIcon,
+  linkedinIcon,
+  facebookIcon,
+  instagramIcon,
+} from "@/lib/constants";
 
 const skills = [
   "USER RESEARCH",
@@ -22,8 +29,8 @@ const skills = [
 
 const stats = [
   { value: "10", label: "Projects", offset: "lg:translate-y-0" },
-  { value: "3", label: "Designs", offset: "lg:translate-y-3" },
-  { value: "4", label: "Case studies", offset: "lg:translate-y-6" },
+  { value: "3", label: "Designs", offset: "lg:translate-y-0" },
+  { value: "4", label: "Case studies", offset: "lg:translate-y-0" },
 ];
 
 const projects = [
@@ -53,117 +60,17 @@ const projects = [
   },
 ];
 
-function NavBar() {
-  return <PortfolioNav active="home" />;
-}
-
-function StatCard({
-  value,
-  label,
-  offset,
-}: {
-  value: string;
-  label: string;
-  offset: string;
-}) {
-  return (
-    <div
-      className={`relative h-49.75 w-49.75 overflow-hidden rounded-3xl bg-[#444] shadow-[0_12px_30px_rgba(0,0,0,0.12)] ${offset}`}
-    >
-      <div className="absolute inset-2.5 overflow-hidden rounded-[20px]">
-        <Image
-          src={heroTexture}
-          alt="Mountain texture"
-          fill
-          className="object-cover"
-          sizes="199px"
-          unoptimized
-        />
-      </div>
-      <div className="absolute inset-x-0 bottom-0 h-29.5">
-        <Image
-          src={cardTexture}
-          alt="Card overlay texture"
-          fill
-          className="object-cover"
-          sizes="199px"
-          unoptimized
-        />
-      </div>
-      <div className="absolute inset-x-0 bottom-4 left-4 right-4 text-white">
-        <p className="text-[48px] font-bold leading-none">{value}</p>
-        <p className="mt-1 text-sm font-light">{label}</p>
-      </div>
-    </div>
-  );
-}
-
-function ProjectCard({
-  number,
-  title,
-  description,
-  tag,
-}: {
-  number: string;
-  title: string;
-  description: string;
-  tag: string;
-}) {
-  return (
-    <article className="mx-auto grid max-w-200.25 gap-5 rounded-3xl bg-[#f2f2f2] p-6 shadow-[0_8px_28px_rgba(0,0,0,0.05)] md:grid-cols-[1fr_1.35fr] md:items-start">
-      <div className="flex h-full flex-col justify-between gap-4">
-        <div>
-          <p className="text-sm text-foreground/60">{number}</p>
-          <h3 className="mt-3 font-serif text-[48px] leading-none text-foreground">
-            {title}
-          </h3>
-          <p className="mt-4 max-w-67.5 text-sm leading-5 text-foreground/75">
-            {description}
-          </p>
-        </div>
-
-        <span className="inline-flex w-fit rounded-full bg-white px-4 py-1.5 text-sm text-foreground shadow-sm">
-          {tag}
-        </span>
-      </div>
-
-      <div className="relative min-h-67.5 overflow-hidden rounded-[20px] bg-[#dde3e8]">
-        <Image
-          src={heroTexture}
-          alt={`${title} preview`}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 457px"
-          unoptimized
-        />
-      </div>
-    </article>
-  );
-}
-
-function SocialIcon({ src, label }: { src: string; label: string }) {
-  return (
-    <a
-      href="#"
-      aria-label={label}
-      className="inline-flex h-9 w-9 items-center justify-center transition-transform hover:scale-105"
-    >
-      <Image src={src} alt="" width={36} height={36} unoptimized />
-    </a>
-  );
-}
-
 export default function Home() {
   return (
     <main className="bg-white text-foreground">
       <section id="home" className="bg-[#0392ea] text-white">
         <div className="mx-auto max-w-432 px-4 pb-16 pt-5 sm:px-8 lg:px-10">
-          <NavBar />
+          <PortfolioNav active="home" variant="white" />
 
           <div className="mx-auto flex max-w-275 flex-col items-center text-center">
-            <div className="mt-24 rounded-md bg-white px-3 py-1 text-sm text-[#0392ea] shadow-sm">
+            <Badge className="mt-24">
               Hi, I&apos;m Kevin
-            </div>
+            </Badge>
 
             <h1 className="mt-6 font-serif text-[clamp(4rem,9vw,7.25rem)] leading-[0.95] tracking-tight">
               Design Engineer
@@ -174,10 +81,8 @@ export default function Home() {
               from a grounded perspective.
             </p>
 
-            <div className="mt-24 w-full overflow-hidden rounded-sm border border-white/80 px-4 py-3">
-              <p className="whitespace-nowrap text-[11px] uppercase tracking-[0.24em] text-white/90 sm:text-[13px] sm:tracking-[0.28em]">
-                {skills.join(" | ")}
-              </p>
+            <div className="mt-24 w-full">
+              <SkillsTicker skills={skills} />
             </div>
           </div>
         </div>
@@ -216,13 +121,14 @@ export default function Home() {
                 improve workflow and user experience.
               </p>
 
-              <Link
-                href="/contact"
-                className="mt-5 inline-flex h-10 items-center gap-2 rounded-md bg-[#2e3441] px-4 text-sm text-white transition-transform hover:-translate-y-0.5"
+              <Button
+                render={<Link href="/contact" />}
+                nativeButton={false}
+                className="mt-5 h-10 gap-2 rounded-md bg-[#2e3441] px-4 text-sm font-normal text-white transition-transform hover:-translate-y-0.5 hover:bg-[#2e3441]/90"
               >
                 Get Started
                 <Image src={arrowRightIcon} alt="" width={20} height={20} unoptimized />
-              </Link>
+              </Button>
 
               <div className="mt-6 flex items-center gap-4">
                 <SocialIcon src={githubIcon} label="GitHub" />
@@ -244,34 +150,32 @@ export default function Home() {
                   <a href="#about">About me</a>
                 </li>
                 <li>
-                  <Link href="/contact">Contact</Link>
+                  <a href="#projects">Projects</a>
+                </li>
+                <li>
+                  <a href="#contact">Contact</a>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h3 className="text-2xl font-bold">Legal</h3>
+              <h3 className="text-2xl font-bold">Socials</h3>
               <ul className="mt-6 space-y-4 text-lg text-white/95">
                 <li>
-                  <a href="#">Privacy Policy</a>
+                  <a href="#">Github</a>
                 </li>
                 <li>
-                  <a href="#">Terms of Services</a>
+                  <a href="#">LinkedIn</a>
+                </li>
+                <li>
+                  <a href="#">Instagram</a>
+                </li>
+                <li>
+                  <a href="#">Facebook</a>
                 </li>
               </ul>
             </div>
           </div>
-
-          <p
-            className="mt-10 bg-cover bg-center bg-clip-text text-center font-serif text-[clamp(4rem,10vw,10rem)] italic leading-none text-transparent"
-            style={{ backgroundImage: `url(${heroTexture})` }}
-          >
-            Kevin Abgao
-          </p>
-
-          <p className="mt-2 text-center text-sm text-white/90">
-            © 2026 Kevin Abgao. All rights reserved.
-          </p>
         </div>
       </section>
     </main>

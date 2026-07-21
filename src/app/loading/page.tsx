@@ -41,7 +41,7 @@ export default function LoadingPage() {
                 noPreference: "(prefers-reduced-motion: no-preference)",
             },
             (context) => {
-                const { reduceMotion } = context.conditions;
+                const reduceMotion = Boolean(context.conditions?.reduceMotion);
 
                 if (reduceMotion) {
                     line.setAttribute("points", buildWavePoints(Math.PI / 4));

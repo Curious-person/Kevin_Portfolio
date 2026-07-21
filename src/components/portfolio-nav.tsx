@@ -2,9 +2,10 @@ import Link from "next/link";
 
 type PortfolioNavProps = {
     active?: "home" | "about" | "contact";
+    variant?: "white" | "blue";
 };
 
-export function PortfolioNav({ active }: PortfolioNavProps) {
+export function PortfolioNav({ active, variant = "blue" }: PortfolioNavProps) {
     const itemBase = "transition-opacity hover:opacity-80";
     const activeClass = "opacity-100";
 
@@ -12,12 +13,14 @@ export function PortfolioNav({ active }: PortfolioNavProps) {
         <header className="mx-auto flex w-full max-w-280 items-center justify-between gap-6 pt-4 text-white">
             <Link
                 href="/"
-                className="font-serif text-xl italic tracking-tight text-[#0392ea] sm:text-2xl"
+                className={`font-serif text-xl italic tracking-tight sm:text-2xl ${
+                    variant === "white" ? "text-white" : "text-[#0392ea]"
+                }`}
             >
                 Kevin Abgao
             </Link>
 
-            <nav className="hidden rounded-lg bg-[#2e3441] px-8 py-4 text-sm font-medium shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:block">
+            <nav className="hidden rounded-lg bg-[#2e3441] px-8 py-4 text-sm font-medium md:block">
                 <ul className="flex items-center gap-24">
                     <li>
                         <Link
@@ -50,6 +53,8 @@ export function PortfolioNav({ active }: PortfolioNavProps) {
                     </li>
                 </ul>
             </nav>
+
+            <div className="w-40" />
         </header>
     );
 }
