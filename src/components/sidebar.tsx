@@ -1,8 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { User, Linkedin, GitHub as Github } from "react-feather"
+
+const buttonClassName =
+    "inline-flex items-center justify-center rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90 dark:hover:text-black"
 
 export default function Sidebar() {
     const handleGithubLink = () => {
@@ -21,25 +23,27 @@ export default function Sidebar() {
                     <h1>John Kevin Abgao</h1>
                     <p>Website developer based from Antipolo, Philippines</p>
                     <Link href="/about" className="w-full">
-                        <Button variant="default" className="dark:hover:text-black w-full">
+                        <span className={`${buttonClassName} w-full`}>
                             <User className="mr-2 h-4 w-4" />
                             About me
-                        </Button>
+                        </span>
                     </Link>
                 </div>
                 <div className="flex flex-col gap-4 items-start">
-                    <Button
+                    <button
+                        type="button"
                         onClick={handleLinkedinLink}
-                        variant="default" className="dark:hover:text-black">
+                        className={buttonClassName}>
                         <Linkedin className="mr-2 h-4 w-4" />
                         Linkedin
-                    </Button>
-                    <Button
+                    </button>
+                    <button
+                        type="button"
                         onClick={handleGithubLink}
-                        variant="default" className="dark:hover:text-black">
+                        className={buttonClassName}>
                         <Github className="mr-2 h-4 w-4" />
                         Github
-                    </Button>
+                    </button>
                 </div>
             </div>
         </aside>
