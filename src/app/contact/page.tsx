@@ -1,16 +1,30 @@
-import Image from "next/image";
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { PortfolioNav } from "@/components/portfolio-nav";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { SendIcon, MapPinIcon, PhoneIcon, MessageIcon } from "@/lib/constants";
 
-const sendIcon = "https://www.figma.com/api/mcp/asset/21cb3597-7293-4cdc-b5b9-d4cc666b36b8";
-const mapPinIcon = "https://www.figma.com/api/mcp/asset/66ca5eb6-9463-4ef4-babe-f3241b7c5eff";
-const phoneIcon = "https://www.figma.com/api/mcp/asset/03b08046-eaa5-4557-98ad-94d0471e3109";
-const messageIcon = "https://www.figma.com/api/mcp/asset/d5564aec-c365-493a-b0b6-766d7c882bf9";
+const contactSchema = z.object({
+    name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+    email: z.string().email({ message: "Please enter a valid email address." }),
+    phone: z.string().optional(),
+    subject: z.string().min(3, { message: "Subject must be at least 3 characters." }),
+    message: z.string().min(10, { message: "Message must be at least 10 characters." }),
+});
 
-function ContactPill({ icon, title, description }: { icon: string; title: string; description: string }) {
+type ContactFormValues = z.infer<typeof contactSchema>;
+
+function ContactPill({ icon: Icon, title, description }: { icon: React.ComponentType<{ className?: string }>; title: string; description: string }) {
     return (
         <div className="flex items-start gap-4">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#f2f2f2]">
-                <Image src={icon} alt="" width={24} height={24} unoptimized />
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center  bg-[#f2f2f2]">
+                <Icon className="h-5 w-5" />
             </div>
             <div>
                 <p className="text-lg font-bold text-[#444]">{title}</p>
@@ -20,20 +34,29 @@ function ContactPill({ icon, title, description }: { icon: string; title: string
     );
 }
 
-function Field({ label, placeholder, className = "", type = "text" }: { label: string; placeholder: string; className?: string; type?: string }) {
-    return (
-        <label className={`flex flex-col gap-2 ${className}`}>
-            <span className="text-[14px] font-semibold text-[#71717a]">{label}</span>
-            <input
-                type={type}
-                placeholder={placeholder}
-                className="h-10 w-full rounded-xl border border-[#e4e4e7] bg-white px-3 text-sm text-foreground outline-none placeholder:text-[#71717a] focus:border-[#0392ea]"
-            />
-        </label>
-    );
-}
-
 export default function ContactPage() {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        reset,
+    } = useForm<ContactFormValues>({
+        resolver: zodResolver(contactSchema),
+        defaultValues: {
+            name: "",
+            email: "",
+            phone: "",
+            subject: "",
+            message: "",
+        },
+    });
+
+    const onSubmit = async (data: ContactFormValues) => {
+        console.log("Form data submitted:", data);
+        alert("Thank you! Your message has been sent successfully.");
+        reset();
+    };
+
     return (
         <main className="bg-white text-foreground">
             <section className="mx-auto min-h-screen max-w-432 px-4 pb-10 sm:px-8 lg:px-36.25">
@@ -50,48 +73,126 @@ export default function ContactPage() {
 
                         <div className="mt-8 space-y-6">
                             <ContactPill
-                                icon={messageIcon}
+                                icon={MessageIcon}
                                 title="Drop a message"
                                 description="I’ll get back to you within 24 hours."
                             />
                             <ContactPill
-                                icon={phoneIcon}
+                                icon={PhoneIcon}
                                 title="Book a Discovery Call"
                                 description="Let’s talk architecture and interface — Available Mon-Fri, 9 AM to 6 PM."
                             />
                             <ContactPill
-                                icon={mapPinIcon}
+                                icon={MapPinIcon}
                                 title="Based In"
                                 description="Antipolo, Rizal (Available for remote work worldwide)"
                             />
                         </div>
                     </div>
 
-                    <form className="w-full space-y-6">
-                        <Field label="Your Name" placeholder="John Doe" />
-
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <Field label="Email" placeholder="example@domain.com" type="email" />
-                            <Field label="Phone (optional)" placeholder="+1 332 245 666" type="tel" />
+                    <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-6">
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="name" className="text-[14px] font-semibold text-[#71717a]">
+                                Your Name
+                            </Label>
+                            <Input
+                                id="name"
+                                placeholder="John Doe"
+                                aria-invalid={!!errors.name}
+                                className="h-10 "
+                                {...register("name")}
+                            />
+                            {errors.name && (
+                                <span className="text-xs font-medium text-destructive">
+                                    {errors.name.message}
+                                </span>
+                            )}
                         </div>
 
-                        <Field label="Subject" placeholder="Which topic are you interested in?" />
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="flex flex-col gap-2">
+                                <Label htmlFor="email" className="text-[14px] font-semibold text-[#71717a]">
+                                    Email
+                                </Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="example@domain.com"
+                                    aria-invalid={!!errors.email}
+                                    className="h-10 "
+                                    {...register("email")}
+                                />
+                                {errors.email && (
+                                    <span className="text-xs font-medium text-destructive">
+                                        {errors.email.message}
+                                    </span>
+                                )}
+                            </div>
 
-                        <label className="flex flex-col gap-2">
-                            <span className="text-[14px] font-semibold text-[#71717a]">Your message</span>
-                            <textarea
-                                placeholder="Type your message here."
-                                className="min-h-30 w-full rounded-xl border border-[#e4e4e7] bg-white px-3 py-3 text-sm text-foreground outline-none placeholder:text-[#71717a] focus:border-[#0392ea]"
+                            <div className="flex flex-col gap-2">
+                                <Label htmlFor="phone" className="text-[14px] font-semibold text-[#71717a]">
+                                    Phone (optional)
+                                </Label>
+                                <Input
+                                    id="phone"
+                                    type="tel"
+                                    placeholder="+1 332 245 666"
+                                    aria-invalid={!!errors.phone}
+                                    className="h-10 "
+                                    {...register("phone")}
+                                />
+                                {errors.phone && (
+                                    <span className="text-xs font-medium text-destructive">
+                                        {errors.phone.message}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="subject" className="text-[14px] font-semibold text-[#71717a]">
+                                Subject
+                            </Label>
+                            <Input
+                                id="subject"
+                                placeholder="Which topic are you interested in?"
+                                aria-invalid={!!errors.subject}
+                                className="h-10 "
+                                {...register("subject")}
                             />
-                        </label>
+                            {errors.subject && (
+                                <span className="text-xs font-medium text-destructive">
+                                    {errors.subject.message}
+                                </span>
+                            )}
+                        </div>
 
-                        <button
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="message" className="text-[14px] font-semibold text-[#71717a]">
+                                Your message
+                            </Label>
+                            <Textarea
+                                id="message"
+                                placeholder="Type your message here."
+                                aria-invalid={!!errors.message}
+                                className="min-h-30  py-3"
+                                {...register("message")}
+                            />
+                            {errors.message && (
+                                <span className="text-xs font-medium text-destructive">
+                                    {errors.message.message}
+                                </span>
+                            )}
+                        </div>
+
+                        <Button
                             type="submit"
-                            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#0392ea] px-4 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                            disabled={isSubmitting}
+                            className="h-10 w-full gap-2  bg-[#0392ea] px-4 text-sm font-medium text-white transition-opacity hover:opacity-90 cursor-pointer"
                         >
-                            Send Now
-                            <Image src={sendIcon} alt="" width={16} height={16} unoptimized />
-                        </button>
+                            {isSubmitting ? "Sending..." : "Send Now"}
+                            <SendIcon className="h-4 w-4" />
+                        </Button>
                     </form>
                 </div>
             </section>

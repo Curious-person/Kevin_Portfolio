@@ -7,14 +7,20 @@ export function ProjectCard({
   title,
   description,
   tag,
+  onClick,
 }: {
   number: string;
   title: string;
   description: string;
   tag: string;
+  onClick?: () => void;
 }) {
   return (
-    <article className="group relative mx-auto grid max-w-200.25 gap-5 overflow-hidden rounded-3xl bg-[#f2f2f2] p-6 shadow-[0_8px_28px_rgba(0,0,0,0.05)] transition-all duration-500 md:grid-cols-[1fr_1.35fr] md:items-start">
+    <button
+      type="button"
+      onClick={onClick}
+      className="group relative mx-auto grid w-full max-w-200.25 gap-5 overflow-hidden rounded-3xl bg-[#f2f2f2] p-6 text-left shadow-[0_8px_28px_rgba(0,0,0,0.05)] transition-all duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0392ea]/30 md:grid-cols-[1fr_1.35fr] md:items-start"
+    >
       {/* Background Hover Blue Gradient */}
       <div
         aria-hidden="true"
@@ -47,6 +53,6 @@ export function ProjectCard({
           unoptimized
         />
       </div>
-    </article>
+    </button>
   );
 }

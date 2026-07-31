@@ -1,21 +1,34 @@
 "use client";
 
-import Image from "next/image";
+import { useState } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { PortfolioNav } from "@/components/portfolio-nav";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SkillsTicker } from "@/components/skills-ticker";
 import { StatCard } from "@/components/stat-card";
 import { ProjectCard } from "@/components/project-card";
+import { DesignGallery } from "@/components/design-gallery";
+import { ProjectDetailSheet } from "@/components/project-detail-sheet";
 import { SocialIcon } from "@/components/social-icon";
 import {
-  arrowRightIcon,
+  ArrowRightIcon,
   githubIcon,
   linkedinIcon,
   facebookIcon,
   instagramIcon,
 } from "@/lib/constants";
+
+type PortfolioTab = "projects" | "designs" | "case-studies";
+
+type PortfolioItem = {
+  id: string;
+  number: string;
+  title: string;
+  description: string;
+  tag: string;
+};
 
 const skills = [
   "USER RESEARCH",
@@ -28,9 +41,9 @@ const skills = [
 ];
 
 const stats = [
-  { value: "10", label: "Projects", offset: "lg:translate-y-0" },
-  { value: "3", label: "Designs", offset: "lg:translate-y-0" },
-  { value: "4", label: "Case studies", offset: "lg:translate-y-0" },
+  { id: "projects", value: "10", label: "Projects", offset: "lg:translate-y-0" },
+  { id: "designs", value: "3", label: "Designs", offset: "lg:translate-y-0" },
+  { id: "case-studies", value: "4", label: "Case studies", offset: "lg:translate-y-0" },
 ];
 
 const projects = [
@@ -44,7 +57,7 @@ const projects = [
   },
   {
     id: "project-2",
-    number: "Project 1",
+    number: "Project 2",
     title: "NU Space",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -52,7 +65,7 @@ const projects = [
   },
   {
     id: "project-3",
-    number: "Project 1",
+    number: "Project 3",
     title: "NU Space",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -60,7 +73,31 @@ const projects = [
   },
 ];
 
+
+
+const caseStudies = [
+  {
+    id: "case-1",
+    number: "Case Study 1",
+    title: "Onboarding Redesign",
+    description:
+      "An in-depth user research and design project aimed at identifying and fixing user retention leaks during onboarding, resulting in a 28% completion increase.",
+    tag: "UX Research & Design",
+  },
+  {
+    id: "case-2",
+    number: "Case Study 2",
+    title: "A11y Audit & Update",
+    description:
+      "A deep dive into WCAG 2.1 AAA accessibility auditing and user flows redesign for an enterprise platform serving 500k+ active users.",
+    tag: "Web Accessibility",
+  },
+];
+
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<PortfolioTab>("projects");
+  const [selectedProject, setSelectedProject] = useState<PortfolioItem | null>(null);
+
   return (
     <main className="bg-white text-foreground">
       <section id="home" className="bg-[#0392ea] text-white">
@@ -90,20 +127,50 @@ export default function Home() {
 
       <section className="bg-white px-4 pb-20 pt-20 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-270">
-          <div className="flex flex-wrap items-start justify-center gap-6 sm:gap-8">
+          <div className="flex flex-wrap items-start justify-center gap-6 sm:gap-8" role="tablist" aria-label="Portfolio sections">
             {stats.map((stat) => (
-              <StatCard key={stat.label} {...stat} />
+              <StatCard
+                key={stat.label}
+                {...stat}
+                isActive={activeTab === stat.id}
+                onClick={() => setActiveTab(stat.id as PortfolioTab)}
+              />
             ))}
           </div>
 
-          <h2 className="mt-16 text-center font-serif text-[clamp(3rem,4vw,4.5rem)] leading-none text-[#444]">
-            Projects
+          <h2 className="mt-16 text-center font-serif text-[clamp(3rem,4vw,4.5rem)] leading-none text-[#444] capitalize">
+            {activeTab === "case-studies" ? "Case Studies" : activeTab}
           </h2>
 
-          <div className="mt-10 space-y-6">
-            {projects.map((project) => (
-              <ProjectCard key={project.id} {...project} />
-            ))}
+          <div className="overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className={activeTab === "designs" ? "mt-10" : "mt-10 space-y-6"}
+              >
+                {activeTab === "projects" &&
+                  projects.map((project) => (
+                    <ProjectCard
+                      key={project.id}
+                      {...project}
+                      onClick={() => setSelectedProject(project)}
+                    />
+                  ))}
+                {activeTab === "designs" && <DesignGallery />}
+                {activeTab === "case-studies" &&
+                  caseStudies.map((cs) => (
+                    <ProjectCard
+                      key={cs.id}
+                      {...cs}
+                      onClick={() => setSelectedProject(cs)}
+                    />
+                  ))}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </section>
@@ -127,7 +194,7 @@ export default function Home() {
                 className="mt-5 h-10 gap-2 rounded-md bg-[#2e3441] px-4 text-sm font-normal text-white transition-transform hover:-translate-y-0.5 hover:bg-[#2e3441]/90"
               >
                 Get Started
-                <Image src={arrowRightIcon} alt="" width={20} height={20} unoptimized />
+                <ArrowRightIcon className="h-5 w-5" />
               </Button>
 
               <div className="mt-6 flex items-center gap-4">
@@ -178,6 +245,13 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <ProjectDetailSheet
+        open={selectedProject !== null}
+        title={selectedProject?.title ?? ""}
+        description={selectedProject?.description ?? ""}
+        onClose={() => setSelectedProject(null)}
+      />
     </main>
   );
 }

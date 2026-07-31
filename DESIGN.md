@@ -198,6 +198,9 @@ The shape language is deliberately simple and rounded.
 ### Iconography
 - **Style:** Outlined icons with a 1.5pt or 2pt stroke weight.
 - **Consistency:** Use a single library such as Lucide to keep the icon set visually aligned.
+- **Location:** All icons must be exported from `src/lib/constants.ts` as React components. Do not import Lucide icons directly in components.
+- **Naming:** Icon exports should follow PascalCase naming (e.g., `ArrowRightIcon`, `CloseIcon`).
+- **Exceptions:** Social media icons (GitHub, LinkedIn, Facebook, Instagram) may remain as Figma URL exports for branding consistency, but should still be defined in `src/lib/constants.ts`.
 
 ## Engineering Principles
 
@@ -230,7 +233,7 @@ Before creating **any** new component, first check whether it already exists in 
 
 Priority order for new UI/logic needs:
 1. **shadcn/ui** — default source for primitives (Button, Card, Dialog, Input, Select, Tooltip, etc.). Extend and theme these to match the bright editorial tokens above rather than hand-rolling equivalents.
-2. **lucide-react** — default and only icon set, matching the outlined iconography rule already defined above.
+2. **lucide-react** — default and only icon set, matching the outlined iconography rule already defined above. All Lucide icons must be exported from `src/lib/constants.ts` as React components rather than imported directly in individual files.
 3. **react-hook-form** — default for all form state management (registration, submission, error state, touched/dirty tracking).
 4. **zod** — default for all schema validation, paired with `@hookform/resolvers/zod` to validate `react-hook-form` forms. Also use for validating external data (API responses, params).
 

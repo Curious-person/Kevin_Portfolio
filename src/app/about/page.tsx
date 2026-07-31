@@ -1,12 +1,6 @@
 import Image from "next/image";
 import { PortfolioNav } from "@/components/portfolio-nav";
-
-const portrait = "https://www.figma.com/api/mcp/asset/8d27202e-9c2e-43bd-81fc-eca475ae8485";
-const graduationIcon = "https://www.figma.com/api/mcp/asset/40f3765d-bc27-4456-8d5e-a92968bc79e6";
-const heartIcon = "https://www.figma.com/api/mcp/asset/504251d3-503c-4cba-a39b-5b5ec1fe5392";
-const lightbulbIcon = "https://www.figma.com/api/mcp/asset/cf8dbdb5-4473-4636-9b59-110b444245fd";
-const rulerIcon = "https://www.figma.com/api/mcp/asset/3fa04a32-a567-48e0-8f52-2c9e2ecf465a";
-const mapPinIcon = "https://www.figma.com/api/mcp/asset/c39fa57b-25a6-4743-9acc-ec5578a842f4";
+import { portrait, MapPinIcon, GraduationCapIcon, RulerIcon, HeartIcon, LightbulbIcon } from "@/lib/constants";
 
 const experience = [
     {
@@ -29,12 +23,12 @@ const experience = [
 function InfoCard({
     title,
     description,
-    icon,
+    icon: Icon,
     filled,
 }: {
     title: string;
     description: string;
-    icon: string;
+    icon: React.ComponentType<{ className?: string }>;
     filled?: boolean;
 }) {
     return (
@@ -42,7 +36,7 @@ function InfoCard({
             className={`rounded-[24px] border ${filled ? "border-transparent bg-[#b4e2ff]" : "border-[#d9d9d9] bg-white"} p-4 shadow-[0_8px_24px_rgba(0,0,0,0.02)]`}
         >
             <div className={`mb-8 flex h-8 w-8 items-center justify-center rounded-md ${filled ? "bg-white" : "bg-[#b4e2ff]"}`}>
-                <Image src={icon} alt="" width={24} height={24} unoptimized />
+                <Icon className="h-5 w-5" />
             </div>
             <h3 className="text-[20px] font-bold text-[#444]">{title}</h3>
             <p className="mt-3 max-w-[337px] text-sm leading-[1.4] text-[#444]">
@@ -65,7 +59,7 @@ export default function AboutPage() {
                         </div>
                         <p className="mt-4 text-lg font-bold text-[#444]">John Kevin D. Abgao</p>
                         <div className="mt-1 flex items-center gap-2 text-sm text-[#71717a]">
-                            <Image src={mapPinIcon} alt="" width={15} height={15} unoptimized />
+                            <MapPinIcon className="h-4 w-4" />
                             <span>Antipolo, Rizal</span>
                         </div>
                     </div>
@@ -79,23 +73,23 @@ export default function AboutPage() {
                             <InfoCard
                                 title="Background"
                                 description="BSIT Graduate, with 1 year of development experience."
-                                icon={graduationIcon}
+                                icon={GraduationCapIcon}
                             />
                             <InfoCard
                                 title="Core skills"
                                 description="Frontend, Backend, UX Design, & AI Workflows"
-                                icon={rulerIcon}
+                                icon={RulerIcon}
                             />
                             <InfoCard
                                 title="What drives me"
                                 description="I design for how people think, not how trends look."
-                                icon={heartIcon}
+                                icon={HeartIcon}
                                 filled
                             />
                             <InfoCard
                                 title="Currently"
                                 description="Building up a UX Case study, and integrating AI tools to leverage UIs."
-                                icon={lightbulbIcon}
+                                icon={LightbulbIcon}
                                 filled
                             />
                         </div>
