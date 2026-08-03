@@ -59,7 +59,7 @@ export default function ContactPage() {
 
     return (
         <main className="bg-white text-foreground">
-            <section className="mx-auto min-h-screen max-w-432 px-4 pb-10 sm:px-8 lg:px-36.25">
+            <section className="mx-auto min-h-screen max-w-432 px-4 pb-10 pt-28 sm:px-8 lg:px-36.25">
                 <PortfolioNav active="contact" />
 
                 <div className="mt-24 grid gap-12 lg:grid-cols-[468px_minmax(0,380px)] lg:justify-between lg:gap-16">

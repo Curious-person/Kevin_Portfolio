@@ -49,7 +49,7 @@ function InfoCard({
 export default function AboutPage() {
     return (
         <main className="bg-white text-foreground">
-            <section className="mx-auto min-h-screen max-w-[1728px] px-4 pb-10 sm:px-8 lg:px-[145px]">
+            <section className="mx-auto min-h-screen max-w-[1728px] px-4 pb-10 pt-28 sm:px-8 lg:px-[145px]">
                 <PortfolioNav active="about" />
 
                 <div className="mt-16 grid gap-8 lg:grid-cols-[299px_minmax(0,1fr)] lg:gap-10">
@@ -94,7 +94,7 @@ export default function AboutPage() {
                             />
                         </div>
 
-                        <section className="mt-16 max-w-[763px]">
+                        <section id="experience" className="mt-16 max-w-[763px]">
                             <h2 className="font-serif text-[clamp(2.5rem,3vw,3.5rem)] leading-none text-black">
                                 Experience
                             </h2>

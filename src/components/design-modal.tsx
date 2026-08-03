@@ -1,0 +1,93 @@
+"use client";
+
+import { useEffect } from "react";
+import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import { CloseIcon } from "@/lib/constants";
+
+type DesignModalProps = {
+  open: boolean;
+  onClose: () => void;
+  design: {
+    title: string;
+    image: string;
+    aspectRatio?: string;
+  } | null;
+};
+
+export function DesignModal({ open, onClose, design }: DesignModalProps) {
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, onClose]);
+
+  return (
+    <AnimatePresence>
+      {open && design ? (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-8 backdrop-blur-sm overflow-y-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          onClick={onClose}
+          role="presentation"
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close modal"
+            className="absolute right-5 top-5 z-10 text-white/50 hover:text-white transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 p-1"
+          >
+            <CloseIcon className="h-6 w-6" strokeWidth={1.5} />
+          </button>
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${design.title} details`}
+            className="relative flex w-full max-w-2xl flex-col items-center overflow-hidden rounded-3xl px-6 py-12 text-center sm:px-10 sm:py-16"
+            initial={{ scale: 0.96, y: 18, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{ scale: 0.96, y: 18, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 180, damping: 20 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+
+            {/* Title Area */}
+            <h2 className="font-serif text-5xl md:text-6xl font-light text-white mb-6 tracking-wide">
+              {design.title}
+            </h2>
+
+            {/* Description Area */}
+            <div className="flex flex-col items-center px-4 max-w-lg">
+              <p className="font-sans text-sm md:text-base text-neutral-400 leading-relaxed">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+              </p>
+            </div>
+
+            {/* Image Placeholder */}
+            <div className={`relative w-full max-w-xs sm:max-w-sm md:max-w-md ${design.aspectRatio || "aspect-[2/3]"} bg-[#e8e8e8] rounded-[24px] overflow-hidden shadow-lg mt-10`}>
+              <Image
+                src={design.image}
+                alt={design.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 24rem"
+                unoptimized
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}

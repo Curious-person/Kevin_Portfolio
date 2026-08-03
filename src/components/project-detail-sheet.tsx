@@ -54,7 +54,7 @@ export function ProjectDetailSheet({
         <AnimatePresence>
             {open ? (
                 <motion.div
-                    className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 p-0 backdrop-blur-[2px] sm:items-center sm:p-3"
+                    className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 pt-12 backdrop-blur-[2px] sm:pt-16"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -66,7 +66,7 @@ export function ProjectDetailSheet({
                         role="dialog"
                         aria-modal="true"
                         aria-label={`${title} details`}
-                        className="relative flex h-svh w-full flex-col overflow-hidden bg-white shadow-[0_-24px_80px_rgba(0,0,0,0.24)] sm:h-[calc(100svh-1.5rem)] sm:max-w-5xl sm:rounded-t-3xl"
+                        className="relative flex h-full w-full flex-col overflow-hidden rounded-t-3xl bg-white shadow-[0_-24px_80px_rgba(0,0,0,0.24)]"
                         initial={{ y: "100%" }}
                         animate={{ y: 0 }}
                         exit={{ y: "100%" }}

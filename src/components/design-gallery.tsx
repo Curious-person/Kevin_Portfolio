@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { DesignCard } from "./design-card";
+import { DesignModal } from "./design-modal";
 
 const designs = [
   {
@@ -27,7 +28,7 @@ const designs = [
   {
     id: "design-4",
     title: "Aether Landing Page",
-    image: "https://images.unsplash.com/photo-1618005198143-e5283b519a7f?q=80&w=600&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1785301973694-d95aebf5bdb8?q=80&w=990&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     aspectRatio: "aspect-square",
   },
   {
@@ -46,13 +47,14 @@ const designs = [
 
 export function DesignGallery() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [selectedDesign, setSelectedDesign] = useState<{title: string, image: string, aspectRatio?: string} | null>(null);
 
   useGSAP(
     () => {
       if (!containerRef.current) return;
 
       const cards = containerRef.current.querySelectorAll(".design-card");
-      
+
       // Set initial state
       gsap.set(cards, { opacity: 0, y: 40 });
 
@@ -70,15 +72,18 @@ export function DesignGallery() {
   );
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <div
-        ref={containerRef}
-        className="mt-10 columns-1 md:columns-2 lg:columns-3 gap-8"
-      >
-        {designs.map((design) => (
-          <DesignCard key={design.id} design={design} />
-        ))}
+    <>
+      <div className="mx-auto max-w-4xl">
+        <div
+          ref={containerRef}
+          className="mt-10 columns-1 md:columns-2 lg:columns-3 gap-8"
+        >
+          {designs.map((design) => (
+            <DesignCard key={design.id} design={design} onClick={() => setSelectedDesign(design)} />
+          ))}
+        </div>
       </div>
-    </div>
+      <DesignModal open={selectedDesign !== null} onClose={() => setSelectedDesign(null)} design={selectedDesign} />
+    </>
   );
 }

@@ -4,6 +4,7 @@ import Image from "next/image";
 
 export function DesignCard({
   design,
+  onClick,
 }: {
   design: {
     id: string;
@@ -11,9 +12,10 @@ export function DesignCard({
     image: string;
     aspectRatio: string;
   };
+  onClick?: () => void;
 }) {
   return (
-    <div className="design-card group cursor-pointer break-inside-avoid mb-8">
+    <div className="design-card group cursor-pointer break-inside-avoid mb-8" onClick={onClick}>
       <div className={`relative overflow-hidden rounded-[24px] bg-neutral-100 ${design.aspectRatio} transition-all duration-500 ease-out hover:shadow-xl hover:-translate-y-1`}>
         <Image
           src={design.image}

@@ -1,13 +1,14 @@
-import { ArrowRight, X, Send, MapPin, Phone, MessageCircle, GraduationCap, Heart, Lightbulb, Ruler } from "lucide-react";
+import { ArrowRight, Download, X, Send, MapPin, Phone, MessageCircle, GraduationCap, Heart, Lightbulb, Ruler } from "lucide-react";
 import { faGithub, faLinkedin, faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons";
 
-export const heroTexture = "https://www.figma.com/api/mcp/asset/6f79f46d-a9b4-46f2-b63f-fc162b3a39dc";
-export const portrait = "https://www.figma.com/api/mcp/asset/8d27202e-9c2e-43bd-81fc-eca475ae8485";
+export const heroTexture = "https://images.unsplash.com/photo-1777661097541-e9ebeffe6aa2?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+export const portrait = "https://drive.google.com/file/d/1lAnkyItIwi1FdjcmfmFBBelrX6t7LJe7/view";
 export const githubIcon = faGithub;
 export const linkedinIcon = faLinkedin;
 export const facebookIcon = faFacebook;
 export const instagramIcon = faInstagram;
 export const ArrowRightIcon = ArrowRight;
+export const DownloadIcon = Download;
 export const CloseIcon = X;
 export const SendIcon = Send;
 export const MapPinIcon = MapPin;

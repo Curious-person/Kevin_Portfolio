@@ -101,8 +101,11 @@ export default function Home() {
   return (
     <main className="bg-white text-foreground">
       <section id="home" className="bg-[#0392ea] text-white">
-        <div className="mx-auto max-w-432 px-4 pb-16 pt-5 sm:px-8 lg:px-10">
-          <PortfolioNav active="home" variant="white" />
+        <div className="mx-auto max-w-432 px-4 pb-16 pt-28 sm:px-8 lg:px-10">
+          <PortfolioNav
+            active="home"
+            variant="white"
+          />
 
           <div className="mx-auto flex max-w-275 flex-col items-center text-center">
             <Badge className="mt-24">
@@ -252,6 +255,7 @@ export default function Home() {
         description={selectedProject?.description ?? ""}
         onClose={() => setSelectedProject(null)}
       />
+
     </main>
   );
 }
