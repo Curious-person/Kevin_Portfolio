@@ -8,22 +8,32 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { submitContact } from "@/app/actions/contact";
 import { SendIcon, MapPinIcon, PhoneIcon, MessageIcon } from "@/lib/constants";
 
+// Form validation schema matching user specifications
 const contactSchema = z.object({
     name: z.string().min(2, { message: "Name must be at least 2 characters." }),
     email: z.string().email({ message: "Please enter a valid email address." }),
     phone: z.string().optional(),
-    subject: z.string().min(3, { message: "Subject must be at least 3 characters." }),
+    subject: z.string().min(5, { message: "Subject must be at least 5 characters." }),
     message: z.string().min(10, { message: "Message must be at least 10 characters." }),
 });
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
-function ContactPill({ icon: Icon, title, description }: { icon: React.ComponentType<{ className?: string }>; title: string; description: string }) {
+function ContactPill({ 
+    icon: Icon, 
+    title, 
+    description 
+}: { 
+    icon: React.ComponentType<{ className?: string }>; 
+    title: string; 
+    description: string 
+}) {
     return (
         <div className="flex items-start gap-4">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center  bg-[#f2f2f2]">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#f2f2f2]">
                 <Icon className="h-5 w-5" />
             </div>
             <div>
@@ -34,6 +44,10 @@ function ContactPill({ icon: Icon, title, description }: { icon: React.Component
     );
 }
 
+/**
+ * Contact Page Client Component.
+ * Integrates React Hook Form, Zod validation, and the submitContact Server Action.
+ */
 export default function ContactPage() {
     const {
         register,
@@ -52,9 +66,23 @@ export default function ContactPage() {
     });
 
     const onSubmit = async (data: ContactFormValues) => {
-        console.log("Form data submitted:", data);
-        alert("Thank you! Your message has been sent successfully.");
-        reset();
+        try {
+            const response = await submitContact(data);
+
+            if (response.success) {
+                if (response.warning) {
+                    alert(`${response.message}\n\nNotice: ${response.warning}`);
+                } else {
+                    alert(response.message || "Thank you! Your message has been sent successfully.");
+                }
+                reset();
+            } else {
+                alert(response.error || "Failed to submit. Please check your connection and try again.");
+            }
+        } catch (err) {
+            console.error("Failed to submit contact form:", err);
+            alert("An unexpected error occurred. Please try again later.");
+        }
     };
 
     return (
@@ -175,7 +203,7 @@ export default function ContactPage() {
                                 id="message"
                                 placeholder="Type your message here."
                                 aria-invalid={!!errors.message}
-                                className="min-h-30  py-3"
+                                className="min-h-30 py-3"
                                 {...register("message")}
                             />
                             {errors.message && (
@@ -188,7 +216,7 @@ export default function ContactPage() {
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="h-10 w-full gap-2  bg-[#0392ea] px-4 text-sm font-medium text-white transition-opacity hover:opacity-90 cursor-pointer"
+                            className="h-10 w-full gap-2 bg-[#0392ea] px-4 text-sm font-medium text-white transition-opacity hover:opacity-90 cursor-pointer"
                         >
                             {isSubmitting ? "Sending..." : "Send Now"}
                             <SendIcon className="h-4 w-4" />

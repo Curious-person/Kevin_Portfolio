@@ -1,24 +1,10 @@
 import Image from "next/image";
 import { PortfolioNav } from "@/components/portfolio-nav";
+import { getExperience } from "@/app/actions/portfolio";
 import { portrait, MapPinIcon, GraduationCapIcon, RulerIcon, HeartIcon, LightbulbIcon } from "@/lib/constants";
 
-const experience = [
-    {
-        company: "Nexvision Innovations, Inc.",
-        role: "Full-Stack and WordPress Developer Intern",
-        dates: "February 2026 - April 2026",
-    },
-    {
-        company: "Technology Services Office, NU Manila",
-        role: "UI/UX Intern",
-        dates: "December 2025 - February 2026",
-    },
-    {
-        company: "Google Developer Groups Manila",
-        role: "Technical Production Executive",
-        dates: "July 2025 - September 2025",
-    },
-];
+// Revalidate cache every hour
+export const revalidate = 3600;
 
 function InfoCard({
     title,
@@ -46,7 +32,13 @@ function InfoCard({
     );
 }
 
-export default function AboutPage() {
+/**
+ * About Page Server Component.
+ * Fetches professional history (Experience list) from Supabase dynamically.
+ */
+export default async function AboutPage() {
+    const experience = await getExperience();
+
     return (
         <main className="bg-white text-foreground">
             <section className="mx-auto min-h-screen max-w-[1728px] px-4 pb-10 pt-28 sm:px-8 lg:px-[145px]">
@@ -100,18 +92,22 @@ export default function AboutPage() {
                             </h2>
 
                             <div className="mt-8 space-y-6">
-                                {experience.map((item, index) => (
-                                    <div key={item.company} className="pb-4">
-                                        <div className="flex flex-col gap-2 border-b border-[#e5e7eb] pb-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
-                                            <div>
-                                                <p className="text-lg font-bold text-[#444]">{item.company}</p>
-                                                <p className="text-base text-[#444]">{item.role}</p>
+                                {experience.length > 0 ? (
+                                    experience.map((item, index) => (
+                                        <div key={item.id || item.company} className="pb-4">
+                                            <div className="flex flex-col gap-2 border-b border-[#e5e7eb] pb-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
+                                                <div>
+                                                    <p className="text-lg font-bold text-[#444]">{item.company}</p>
+                                                    <p className="text-base text-[#444]">{item.role}</p>
+                                                </div>
+                                                <p className="text-base italic text-[#444] lg:text-right">{item.dates}</p>
                                             </div>
-                                            <p className="text-base italic text-[#444] lg:text-right">{item.dates}</p>
+                                            {index === experience.length - 1 ? null : <div className="h-px bg-[#e5e7eb]" />}
                                         </div>
-                                        {index === experience.length - 1 ? null : <div className="h-px bg-[#e5e7eb]" />}
-                                    </div>
-                                ))}
+                                    ))
+                                ) : (
+                                    <p className="text-base text-neutral-500 italic">No experience entries found.</p>
+                                )}
                             </div>
                         </section>
                     </div>

@@ -34,7 +34,7 @@ export function DesignModal({ open, onClose, design }: DesignModalProps) {
     <AnimatePresence>
       {open && design ? (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-8 backdrop-blur-sm overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/80 px-4 py-8 backdrop-blur-sm overflow-y-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -46,7 +46,7 @@ export function DesignModal({ open, onClose, design }: DesignModalProps) {
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="absolute right-5 top-5 z-10 text-white/50 hover:text-white transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 p-1"
+            className="fixed right-5 top-5 z-50 text-white/50 hover:text-white transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 p-1"
           >
             <CloseIcon className="h-6 w-6" strokeWidth={1.5} />
           </button>
@@ -54,7 +54,7 @@ export function DesignModal({ open, onClose, design }: DesignModalProps) {
             role="dialog"
             aria-modal="true"
             aria-label={`${design.title} details`}
-            className="relative flex w-full max-w-2xl flex-col items-center overflow-hidden rounded-3xl px-6 py-12 text-center sm:px-10 sm:py-16"
+            className="relative mt-4 flex w-full max-w-2xl flex-col items-center overflow-hidden rounded-3xl px-6 py-12 text-center sm:mt-8 sm:px-10 sm:py-16"
             initial={{ scale: 0.96, y: 18, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.96, y: 18, opacity: 0 }}
@@ -75,7 +75,7 @@ export function DesignModal({ open, onClose, design }: DesignModalProps) {
             </div>
 
             {/* Image Placeholder */}
-            <div className={`relative w-full max-w-xs sm:max-w-sm md:max-w-md ${design.aspectRatio || "aspect-[2/3]"} bg-[#e8e8e8] rounded-[24px] overflow-hidden shadow-lg mt-10`}>
+            <div className={`relative w-full max-w-xs sm:max-w-sm md:max-w-md ${design.aspectRatio || "aspect-2/3"} bg-[#e8e8e8] rounded-3xl overflow-hidden shadow-lg mt-10`}>
               <Image
                 src={design.image}
                 alt={design.title}

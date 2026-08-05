@@ -5,49 +5,15 @@ import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { DesignCard } from "./design-card";
 import { DesignModal } from "./design-modal";
+import { Design } from "@/lib/supabase";
 
-const designs = [
-  {
-    id: "design-1",
-    title: "Vesper Crypto Wallet",
-    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop",
-    aspectRatio: "aspect-square",
-  },
-  {
-    id: "design-2",
-    title: "Zenith Mobile App",
-    image: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=600&auto=format&fit=crop",
-    aspectRatio: "aspect-[2/3]",
-  },
-  {
-    id: "design-3",
-    title: "Aura Workspace System",
-    image: "https://images.unsplash.com/photo-1604871000636-074fa5117945?q=80&w=600&auto=format&fit=crop",
-    aspectRatio: "aspect-[2/3]",
-  },
-  {
-    id: "design-4",
-    title: "Aether Landing Page",
-    image: "https://images.unsplash.com/photo-1785301973694-d95aebf5bdb8?q=80&w=990&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    aspectRatio: "aspect-square",
-  },
-  {
-    id: "design-5",
-    title: "Smart Home Interface",
-    image: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=600&auto=format&fit=crop",
-    aspectRatio: "aspect-square",
-  },
-  {
-    id: "design-6",
-    title: "Futuristic Core Render",
-    image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=600&auto=format&fit=crop",
-    aspectRatio: "aspect-[2/3]",
-  },
-];
+type DesignGalleryProps = {
+  designs: Design[];
+};
 
-export function DesignGallery() {
+export function DesignGallery({ designs }: DesignGalleryProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [selectedDesign, setSelectedDesign] = useState<{title: string, image: string, aspectRatio?: string} | null>(null);
+  const [selectedDesign, setSelectedDesign] = useState<Design | null>(null);
 
   useGSAP(
     () => {
@@ -71,6 +37,23 @@ export function DesignGallery() {
     { scope: containerRef }
   );
 
+  // Map to align database aspect_ratio with component's aspectRatio prop
+  const formattedDesigns = designs.map((design) => ({
+    id: design.id,
+    title: design.title,
+    image: design.image,
+    aspectRatio: design.aspect_ratio,
+  }));
+
+  const formattedSelectedDesign = selectedDesign
+    ? {
+        id: selectedDesign.id,
+        title: selectedDesign.title,
+        image: selectedDesign.image,
+        aspectRatio: selectedDesign.aspect_ratio,
+      }
+    : null;
+
   return (
     <>
       <div className="mx-auto max-w-4xl">
@@ -78,12 +61,20 @@ export function DesignGallery() {
           ref={containerRef}
           className="mt-10 columns-1 md:columns-2 lg:columns-3 gap-8"
         >
-          {designs.map((design) => (
-            <DesignCard key={design.id} design={design} onClick={() => setSelectedDesign(design)} />
+          {formattedDesigns.map((design, idx) => (
+            <DesignCard 
+              key={design.id} 
+              design={design} 
+              onClick={() => setSelectedDesign(designs[idx])} 
+            />
           ))}
         </div>
       </div>
-      <DesignModal open={selectedDesign !== null} onClose={() => setSelectedDesign(null)} design={selectedDesign} />
+      <DesignModal 
+        open={selectedDesign !== null} 
+        onClose={() => setSelectedDesign(null)} 
+        design={formattedSelectedDesign} 
+      />
     </>
   );
 }
