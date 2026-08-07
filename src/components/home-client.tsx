@@ -21,7 +21,7 @@ import {
   instagramIcon,
 } from "@/lib/constants";
 
-type PortfolioTab = "projects" | "designs" | "case-studies";
+type PortfolioTab = "projects" | "designs" | "case_studies";
 
 type HomeClientProps = {
   projects: Project[];
@@ -42,7 +42,7 @@ export function HomeClient({
   const [selectedProject, setSelectedProject] = useState<Project | CaseStudy | null>(null);
 
   // Map backend stats data to correct layout structure
-  // Ensuring the ids match the tabs ('projects', 'designs', 'case-studies')
+  // Ensuring the ids match the tabs ('projects', 'designs', 'case_studies')
   const formattedStats = stats.map((s) => ({
     id: s.id,
     value: s.value,
@@ -98,7 +98,7 @@ export function HomeClient({
           </div>
 
           <h2 className="mt-16 text-center font-serif text-[clamp(3rem,4vw,4.5rem)] leading-none text-[#444] capitalize">
-            {activeTab === "case-studies" ? "Case Studies" : activeTab}
+            {activeTab === "case_studies" ? "Case Studies" : activeTab}
           </h2>
 
           <div className="overflow-hidden">
@@ -125,7 +125,7 @@ export function HomeClient({
                 
                 {activeTab === "designs" && <DesignGallery designs={designs} />}
                 
-                {activeTab === "case-studies" &&
+                {activeTab === "case_studies" &&
                   caseStudies.map((cs) => (
                     <ProjectCard
                       key={cs.id}

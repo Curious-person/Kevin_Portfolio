@@ -6,6 +6,8 @@ import { CloseIcon, DownloadIcon, SendIcon } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { getResumeUrl, submitResumeRequest } from "@/app/actions/resume";
 
 type ResumeModalProps = {
     open: boolean;
@@ -14,6 +16,10 @@ type ResumeModalProps = {
 
 export function ResumeModal({ open, onClose }: ResumeModalProps) {
     const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
+    const [message, setMessage] = useState("");
+    const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (!open) {
@@ -38,14 +44,43 @@ export function ResumeModal({ open, onClose }: ResumeModalProps) {
     }, [open, onClose]);
 
     const handleSend = () => {
-        const subject = encodeURIComponent("Resume request");
-        const body = encodeURIComponent(
-            email
-                ? `Hi Kevin, please send your resume to ${email}.`
-                : "Hi Kevin, please send your resume."
-        );
+        setIsLoading(true);
+        setStatus(null);
 
-        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        void submitResumeRequest({ email, name, message })
+            .then((result) => {
+                setStatus({
+                    type: result.success ? "success" : "error",
+                    message: result.message || result.error || "Request processed",
+                });
+
+                if (result.success) {
+                    setEmail("");
+                    setName("");
+                    setMessage("");
+                }
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
+
+    const handleDownload = () => {
+        setIsLoading(true);
+        setStatus(null);
+
+        void getResumeUrl()
+            .then((url) => {
+                if (!url) {
+                    setStatus({ type: "error", message: "Resume unavailable." });
+                    return;
+                }
+
+                window.open(url, "_blank", "noopener,noreferrer");
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     };
 
     return (
@@ -95,11 +130,22 @@ export function ResumeModal({ open, onClose }: ResumeModalProps) {
                                     </div>
 
                                     <div className="min-w-0 flex-1 text-center text-base text-[#4a4a4a] sm:text-left">
-                                        <span className="block truncate sm:inline">Abgao_JohnKevin_Resume.pdf</span>
+                                        <span className="block truncate sm:inline">Kevin_Resume.pdf</span>
                                     </div>
 
-                                    <div className="shrink-0 text-sm text-[#767676]">
-                                        600 KB
+                                    <div className="flex shrink-0 items-center gap-3">
+                                        <div className="text-sm text-[#767676]">
+                                            PDF
+                                        </div>
+
+                                        <Button
+                                            type="button"
+                                            onClick={handleDownload}
+                                            disabled={isLoading}
+                                            className="h-11 bg-[#1397f3] px-5 text-base font-medium text-white hover:bg-[#0f8ae0]"
+                                        >
+                                            {isLoading ? "Loading..." : "Download"}
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
@@ -115,7 +161,24 @@ export function ResumeModal({ open, onClose }: ResumeModalProps) {
                                     handleSend();
                                 }}
                             >
-                                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_148px] lg:items-end">
+                                <div className="grid gap-4 lg:grid-cols-2">
+                                    <div>
+                                        <Label
+                                            htmlFor="resume-name"
+                                            className="mb-2 block text-sm font-semibold text-[#7a7a7a]"
+                                        >
+                                            Name
+                                        </Label>
+                                        <Input
+                                            id="resume-name"
+                                            type="text"
+                                            value={name}
+                                            onChange={(event) => setName(event.target.value)}
+                                            placeholder="Your name"
+                                            className="h-11 border-[#e2e2e2] px-4 text-base placeholder:text-[#8c8c8c] focus-visible:border-[#1397f3] focus-visible:ring-[#1397f3]/20"
+                                        />
+                                    </div>
+
                                     <div>
                                         <Label
                                             htmlFor="resume-email"
@@ -133,15 +196,38 @@ export function ResumeModal({ open, onClose }: ResumeModalProps) {
                                         />
                                     </div>
 
+                                    <div className="lg:col-span-2">
+                                        <Label
+                                            htmlFor="resume-message"
+                                            className="mb-2 block text-sm font-semibold text-[#7a7a7a]"
+                                        >
+                                            Message
+                                        </Label>
+                                        <Textarea
+                                            id="resume-message"
+                                            value={message}
+                                            onChange={(event) => setMessage(event.target.value)}
+                                            placeholder="Optional message"
+                                            className="min-h-24 border-[#e2e2e2] px-4 py-3 text-base placeholder:text-[#8c8c8c] focus-visible:border-[#1397f3] focus-visible:ring-[#1397f3]/20"
+                                        />
+                                    </div>
+
                                     <Button
                                         type="submit"
-                                        className="h-11 bg-[#1397f3] px-6 text-base font-medium text-white hover:bg-[#0f8ae0]"
+                                        disabled={isLoading}
+                                        className="h-11 bg-[#1397f3] px-6 text-base font-medium text-white hover:bg-[#0f8ae0] lg:col-span-2"
                                     >
-                                        Send
+                                        {isLoading ? "Sending..." : "Send Resume Request"}
                                         <SendIcon className="ml-2 h-5 w-5" />
                                     </Button>
                                 </div>
                             </form>
+
+                            {status ? (
+                                <div className={`mt-4 rounded-2xl px-4 py-3 text-sm ${status.type === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                                    {status.message}
+                                </div>
+                            ) : null}
 
                             <div className="mt-8 border-t border-[#d9d9d9] pt-4 text-center text-sm text-[#73737d]">
                                 Thank you for your interest!

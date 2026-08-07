@@ -143,6 +143,9 @@ CREATE POLICY "Allow public read access on stats"
 ON stats FOR SELECT 
 USING (true);
 
+-- Grant table privilege to public Supabase roles
+GRANT SELECT ON TABLE stats TO anon, authenticated;
+
 -- Auto-update updated_at trigger
 CREATE TRIGGER update_stats_updated_at 
     BEFORE UPDATE ON stats 

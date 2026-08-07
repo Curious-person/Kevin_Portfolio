@@ -90,3 +90,28 @@ export interface ContactSubmission {
   message: string;
   submitted_at?: string;
 }
+
+/**
+ * Type definition for an uploaded Resume record.
+ */
+export interface Resume {
+  id: string;
+  filename: string;
+  storage_url: string;
+  file_size?: number;
+  version?: string;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+/**
+ * Type definition for a Resume request submission.
+ */
+export interface ResumeRequest {
+  id: string;
+  email: string;
+  name?: string;
+  message?: string;
+  requested_at?: string;
+}
