@@ -217,6 +217,7 @@ export function HomeClient({
       {/* Project Detail Sheet */}
       <ProjectDetailSheet
         open={selectedProject !== null}
+        projectId={selectedProject?.id ?? null}
         title={selectedProject?.title ?? ""}
         description={selectedProject?.description ?? ""}
         onClose={() => setSelectedProject(null)}

@@ -179,8 +179,37 @@ ON contact_submissions FOR SELECT
 TO authenticated 
 USING (true);
 
+-- -------------------------------------------------------------------------
+-- 8. PROJECT DETAILS TABLE
+-- -------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS project_details (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID NOT NULL,
+    section1_title VARCHAR(255),
+    section1_text TEXT,
+    section1_image_url TEXT,
+    section2_title VARCHAR(255),
+    section2_text TEXT,
+    section2_image_url TEXT,
+    section3_title VARCHAR(255),
+    section3_image_url TEXT,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE project_details ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Allow public read-only access
+CREATE POLICY "Allow public read access on project_details"
+ON project_details FOR SELECT
+USING (true);
+
+-- Grant table privilege to public Supabase roles
+GRANT SELECT ON TABLE project_details TO anon, authenticated;
+
 -- =========================================================================
--- 8. SEED DATA INSERTS
+-- 9. SEED DATA INSERTS
 -- =========================================================================
 
 -- Seed Projects

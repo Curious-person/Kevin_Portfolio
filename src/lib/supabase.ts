@@ -115,3 +115,21 @@ export interface ResumeRequest {
   message?: string;
   requested_at?: string;
 }
+
+/**
+ * Type definition for expanded project detail sections.
+ */
+export interface ProjectDetail {
+  id: string;
+  project_id: string;
+  section1_title?: string | null;
+  section1_text?: string | null;
+  section1_image_url?: string | null;
+  section2_title?: string | null;
+  section2_text?: string | null;
+  section2_image_url?: string | null;
+  section3_title?: string | null;
+  section3_image_url?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}

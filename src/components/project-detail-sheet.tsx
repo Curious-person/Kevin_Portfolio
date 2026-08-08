@@ -1,20 +1,33 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CloseIcon } from "@/lib/constants";
+import { supabase, ProjectDetail } from "@/lib/supabase";
 
 type ProjectDetailSheetProps = {
     open: boolean;
+    projectId: string | null;
     title: string;
     description: string;
     onClose: () => void;
 };
 
-function DetailImageBlock({ caption }: { caption?: string }) {
+function DetailImageBlock({
+    imageUrl,
+    caption,
+}: {
+    imageUrl?: string | null;
+    caption?: string;
+}) {
     return (
         <div className="flex flex-col items-center gap-2">
-            <div className="h-55 w-full rounded-3xl bg-[#d9d9d9] sm:h-72" />
+            <div
+                className="h-55 w-full rounded-3xl bg-[#d9d9d9] bg-cover bg-center sm:h-72"
+                style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
+                role="img"
+                aria-label={caption || "Project detail image"}
+            />
             {caption ? (
                 <p className="text-center text-sm text-[#777] sm:text-base">{caption}</p>
             ) : null}
@@ -24,10 +37,14 @@ function DetailImageBlock({ caption }: { caption?: string }) {
 
 export function ProjectDetailSheet({
     open,
+    projectId,
     title,
     description,
     onClose,
 }: ProjectDetailSheetProps) {
+    const [projectDetail, setProjectDetail] = useState<ProjectDetail | null>(null);
+    const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+
     useEffect(() => {
         if (!open) {
             return;
@@ -49,6 +66,55 @@ export function ProjectDetailSheet({
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [open, onClose]);
+
+    useEffect(() => {
+        if (!open || !projectId) {
+            setProjectDetail(null);
+            return;
+        }
+
+        let isMounted = true;
+
+        const loadProjectDetail = async () => {
+            setIsLoadingDetail(true);
+
+            const { data, error } = await supabase
+                .from("project_details")
+                .select("*")
+                .eq("project_id", projectId)
+                .maybeSingle();
+
+            if (!isMounted) {
+                return;
+            }
+
+            if (error) {
+                setProjectDetail(null);
+                setIsLoadingDetail(false);
+                return;
+            }
+
+            setProjectDetail((data as ProjectDetail | null) ?? null);
+            setIsLoadingDetail(false);
+        };
+
+        loadProjectDetail();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [open, projectId]);
+
+    const section1Title = projectDetail?.section1_title || "Overview";
+    const section1Text = projectDetail?.section1_text || description;
+    const section1ImageUrl = projectDetail?.section1_image_url;
+
+    const section2Title = projectDetail?.section2_title || "Process";
+    const section2Text = projectDetail?.section2_text || description;
+    const section2ImageUrl = projectDetail?.section2_image_url;
+
+    const section3Title = projectDetail?.section3_title || "Result";
+    const section3ImageUrl = projectDetail?.section3_image_url;
 
     return (
         <AnimatePresence>
@@ -88,15 +154,19 @@ export function ProjectDetailSheet({
                                     {title}
                                 </h2>
 
+                                {isLoadingDetail ? (
+                                    <p className="mt-6 text-sm text-[#666] sm:text-base">Loading project details...</p>
+                                ) : null}
+
                                 <div className="mt-10 w-full space-y-14 sm:mt-12 sm:space-y-20">
                                     <section className="grid gap-5 md:grid-cols-[0.95fr_1.05fr] md:items-start md:gap-8">
-                                        <DetailImageBlock caption={description} />
+                                        <DetailImageBlock imageUrl={section1ImageUrl} caption={section1Text} />
                                         <div className="md:pt-1">
                                             <h3 className="text-2xl font-semibold leading-tight text-[#444]">
-                                                Lorem ipsum dolor sit amet
+                                                {section1Title}
                                             </h3>
                                             <p className="mt-3 text-base leading-6 text-[#444]/95 sm:text-[18px] sm:leading-[1.45]">
-                                                {description}
+                                                {section1Text}
                                             </p>
                                         </div>
                                     </section>
@@ -104,20 +174,25 @@ export function ProjectDetailSheet({
                                     <section className="grid gap-5 md:grid-cols-[1.05fr_0.95fr] md:items-start md:gap-8">
                                         <div className="md:pt-1">
                                             <h3 className="text-2xl font-semibold leading-tight text-[#444]">
-                                                Lorem ipsum dolor sit amet
+                                                {section2Title}
                                             </h3>
                                             <p className="mt-3 text-base leading-6 text-[#444]/95 sm:text-[18px] sm:leading-[1.45]">
-                                                {description}
+                                                {section2Text}
                                             </p>
                                         </div>
-                                        <DetailImageBlock />
+                                        <DetailImageBlock imageUrl={section2ImageUrl} />
                                     </section>
 
                                     <section className="space-y-5">
                                         <h3 className="text-center text-2xl font-semibold leading-tight text-[#444]">
-                                            Lorem ipsum dolor sit amet
+                                            {section3Title}
                                         </h3>
-                                        <div className="h-55 w-full rounded-3xl bg-[#d9d9d9] sm:h-84.5" />
+                                        <div
+                                            className="h-55 w-full rounded-3xl bg-[#d9d9d9] bg-cover bg-center sm:h-84.5"
+                                            style={section3ImageUrl ? { backgroundImage: `url(${section3ImageUrl})` } : undefined}
+                                            role="img"
+                                            aria-label="Project result image"
+                                        />
                                     </section>
                                 </div>
                             </div>

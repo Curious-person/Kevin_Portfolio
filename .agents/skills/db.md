@@ -106,6 +106,25 @@
 | `message` | `text` |  Nullable |
 | `requested_at` | `timestamp` |  Nullable |
 
+## Table `project_details`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `uuid` | Primary |
+| `project_id` | `uuid` |  |
+| `section1_title` | `varchar` |  Nullable |
+| `section1_text` | `text` |  Nullable |
+| `section1_image_url` | `text` |  Nullable |
+| `section2_title` | `varchar` |  Nullable |
+| `section2_text` | `text` |  Nullable |
+| `section2_image_url` | `text` |  Nullable |
+| `section3_title` | `varchar` |  Nullable |
+| `section3_image_url` | `text` |  Nullable |
+| `created_at` | `timestamp` |  Nullable |
+| `updated_at` | `timestamp` |  Nullable |
+
 ## RLS Policies
 
 ### `stats`
@@ -139,21 +158,27 @@
 |--------|---------|-------|--------|-------|------------|
 | `Allow public read access on projects` | SELECT | public | PERMISSIVE | `true` | — |
 
-### `designs`
-
-| Policy | Command | Roles | Action | USING | WITH CHECK |
-|--------|---------|-------|--------|-------|------------|
-| `Allow public read access on designs` | SELECT | public | PERMISSIVE | `true` | — |
-
 ### `resumes`
 
 | Policy | Command | Roles | Action | USING | WITH CHECK |
 |--------|---------|-------|--------|-------|------------|
 | `Allow public read resumes` | SELECT | public | PERMISSIVE | `true` | — |
 
+### `designs`
+
+| Policy | Command | Roles | Action | USING | WITH CHECK |
+|--------|---------|-------|--------|-------|------------|
+| `Allow public read access on designs` | SELECT | public | PERMISSIVE | `true` | — |
+
 ### `resume_requests`
 
 | Policy | Command | Roles | Action | USING | WITH CHECK |
 |--------|---------|-------|--------|-------|------------|
 | `Allow public insert resume requests` | INSERT | public | PERMISSIVE | — | `true` |
+
+### `project_details`
+
+| Policy | Command | Roles | Action | USING | WITH CHECK |
+|--------|---------|-------|--------|-------|------------|
+| `Allow public read` | SELECT | public | PERMISSIVE | `true` | — |
 
