@@ -154,6 +154,7 @@ export function ResumeModal({ open, onClose }: ResumeModalProps) {
                                 or
                             </p>
 
+<h1>Send me a copy</h1>
                             <form
                                 className="mt-6 rounded-2xl border border-[#d9d9d9] p-4 sm:p-5"
                                 onSubmit={(event) => {

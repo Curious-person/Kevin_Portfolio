@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS projects (
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     tag VARCHAR(100) NOT NULL,
+    image_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
@@ -213,10 +214,10 @@ GRANT SELECT ON TABLE project_details TO anon, authenticated;
 -- =========================================================================
 
 -- Seed Projects
-INSERT INTO projects (number, title, description, tag) VALUES
-('Project 1', 'NU Space', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'System Design'),
-('Project 2', 'NU Space', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'System Design'),
-('Project 3', 'NU Space', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'System Design');
+INSERT INTO projects (number, title, description, tag, image_url) VALUES
+('Project 1', 'NU Space', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'System Design', NULL),
+('Project 2', 'NU Space', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'System Design', NULL),
+('Project 3', 'NU Space', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', 'System Design', NULL);
 
 -- Seed Case Studies
 INSERT INTO case_studies (number, title, description, tag) VALUES

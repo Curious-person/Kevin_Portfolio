@@ -3,7 +3,7 @@
 import { supabase, Project, CaseStudy, Design, Experience, Stats } from "@/lib/supabase";
 
 /**
- * Fetches all portfolio projects from Supabase, ordered by creation date (newest first).
+ * Fetches all portfolio projects from Supabase, then sorts them by their displayed number.
  * @returns A promise that resolves to an array of Project objects, or an empty array on failure.
  */
 export async function getProjects(): Promise<Project[]> {
@@ -11,14 +11,22 @@ export async function getProjects(): Promise<Project[]> {
     const { data, error } = await supabase
       .from("projects")
       .select("*")
-      .order("created_at", { ascending: false });
+
+    const projects = (data as Project[]) || [];
+
+    const sortedProjects = projects.sort((left, right) => {
+      const leftNumber = Number(left.number.match(/\d+/)?.[0] ?? Number.POSITIVE_INFINITY);
+      const rightNumber = Number(right.number.match(/\d+/)?.[0] ?? Number.POSITIVE_INFINITY);
+
+      return leftNumber - rightNumber;
+    });
 
     if (error) {
       console.error("Error in getProjects Server Action:", error.message);
       return [];
     }
 
-    return (data as Project[]) || [];
+    return sortedProjects;
   } catch (err) {
     console.error("Unexpected error in getProjects Server Action:", err);
     return [];

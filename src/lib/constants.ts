@@ -2,7 +2,7 @@ import { ArrowRight, Download, X, Send, MapPin, Phone, MessageCircle, Graduation
 import { faGithub, faLinkedin, faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons";
 
 export const heroTexture = "https://images.unsplash.com/photo-1777661097541-e9ebeffe6aa2?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-export const portrait = "https://drive.google.com/file/d/1lAnkyItIwi1FdjcmfmFBBelrX6t7LJe7/view";
+export const portrait = "https://res.cloudinary.com/f7zsvwe2/image/upload/v1786283196/NU_Graduation_Pictorial_Day_10-2773.jpg";
 export const githubIcon = faGithub;
 export const linkedinIcon = faLinkedin;
 export const facebookIcon = faFacebook;

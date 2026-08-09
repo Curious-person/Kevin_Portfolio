@@ -119,6 +119,7 @@ export function HomeClient({
                       title={project.title}
                       description={project.description}
                       tag={project.tag}
+                      imageUrl={project.image_url}
                       onClick={() => setSelectedProject(project)}
                     />
                   ))}

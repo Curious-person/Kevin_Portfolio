@@ -86,7 +86,7 @@ export default async function AboutPage() {
                             />
                         </div>
 
-                        <section id="experience" className="mt-16 max-w-[763px]">
+                        <section id="experience" className="mt-16 w-full">
                             <h2 className="font-serif text-[clamp(2.5rem,3vw,3.5rem)] leading-none text-black">
                                 Experience
                             </h2>

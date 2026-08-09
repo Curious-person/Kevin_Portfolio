@@ -7,14 +7,24 @@ export function ProjectCard({
   title,
   description,
   tag,
+  imageUrl,
   onClick,
 }: {
   number: string;
   title: string;
   description: string;
   tag: string;
+  imageUrl?: string | null;
   onClick?: () => void;
 }) {
+  const previewImage = imageUrl || heroTexture;
+  const tagLabels = tag
+    .split(",")
+    .map((label) => label.trim())
+    .filter(Boolean);
+  const visibleTags = tagLabels.slice(0, 3);
+  const remainingTags = tagLabels.length - visibleTags.length;
+
   return (
     <button
       type="button"
@@ -38,14 +48,24 @@ export function ProjectCard({
           </p>
         </div>
 
-        <Badge variant={'secondary'}>
-          {tag}
-        </Badge>
+        <div className="flex flex-wrap gap-2">
+          {visibleTags.map((label) => (
+            <Badge key={label} variant="secondary">
+              {label}
+            </Badge>
+          ))}
+
+          {remainingTags > 0 && (
+            <Badge variant="secondary">
+              {remainingTags}+ more
+            </Badge>
+          )}
+        </div>
       </div>
 
       <div className="relative z-10 min-h-67.5 overflow-hidden rounded-[20px] bg-[#dde3e8]">
         <Image
-          src={heroTexture}
+          src={previewImage}
           alt={`${title} preview`}
           fill
           className="object-cover"
