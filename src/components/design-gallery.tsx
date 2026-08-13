@@ -37,20 +37,13 @@ export function DesignGallery({ designs }: DesignGalleryProps) {
     { scope: containerRef }
   );
 
-  // Map to align database aspect_ratio with component's aspectRatio prop
-  const formattedDesigns = designs.map((design) => ({
-    id: design.id,
-    title: design.title,
-    image: design.image,
-    aspectRatio: design.aspect_ratio,
-  }));
-
   const formattedSelectedDesign = selectedDesign
     ? {
         id: selectedDesign.id,
         title: selectedDesign.title,
         image: selectedDesign.image,
-        aspectRatio: selectedDesign.aspect_ratio,
+        width: selectedDesign.width,
+        height: selectedDesign.height,
       }
     : null;
 
@@ -61,11 +54,17 @@ export function DesignGallery({ designs }: DesignGalleryProps) {
           ref={containerRef}
           className="mt-10 columns-1 md:columns-2 lg:columns-3 gap-8"
         >
-          {formattedDesigns.map((design, idx) => (
+          {designs.map((design) => (
             <DesignCard 
               key={design.id} 
-              design={design} 
-              onClick={() => setSelectedDesign(designs[idx])} 
+              design={{
+                id: design.id,
+                title: design.title,
+                image: design.image,
+                width: design.width,
+                height: design.height,
+              }}
+              onClick={() => setSelectedDesign(design)} 
             />
           ))}
         </div>

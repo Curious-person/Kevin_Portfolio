@@ -79,7 +79,10 @@ CREATE TABLE IF NOT EXISTS designs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(255) NOT NULL,
     image TEXT NOT NULL, -- Holds Cloudinary secure URL
-    aspect_ratio VARCHAR(50) DEFAULT 'aspect-square' NOT NULL,
+    width INTEGER NOT NULL,
+    height INTEGER NOT NULL,
+    aspect_ratio NUMERIC GENERATED ALWAYS AS ((width::DECIMAL / NULLIF(height, 0))) STORED,
+    CONSTRAINT designs_width_height_positive CHECK (width > 0 AND height > 0),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
@@ -91,6 +94,10 @@ ALTER TABLE designs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow public read access on designs" 
 ON designs FOR SELECT 
 USING (true);
+
+-- Grant table privileges
+GRANT SELECT ON TABLE designs TO anon, authenticated;
+GRANT INSERT, SELECT ON TABLE designs TO service_role;
 
 -- Auto-update updated_at trigger
 CREATE TRIGGER update_designs_updated_at 
@@ -225,13 +232,13 @@ INSERT INTO case_studies (number, title, description, tag) VALUES
 ('Case Study 2', 'A11y Audit & Update', 'A deep dive into WCAG 2.1 AAA accessibility auditing and user flows redesign for an enterprise platform serving 500k+ active users.', 'Web Accessibility');
 
 -- Seed Designs (Replace these placeholder images with Cloudinary URLs during setup)
-INSERT INTO designs (title, image, aspect_ratio) VALUES
-('Vesper Crypto Wallet', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop', 'aspect-square'),
-('Zenith Mobile App', 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=600&auto=format&fit=crop', 'aspect-[2/3]'),
-('Aura Workspace System', 'https://images.unsplash.com/photo-1604871000636-074fa5117945?q=80&w=600&auto=format&fit=crop', 'aspect-[2/3]'),
-('Aether Landing Page', 'https://images.unsplash.com/photo-1785301973694-d95aebf5bdb8?q=80&w=990&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA==', 'aspect-square'),
-('Smart Home Interface', 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=600&auto=format&fit=crop', 'aspect-square'),
-('Futuristic Core Render', 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=600&auto=format&fit=crop', 'aspect-[2/3]');
+INSERT INTO designs (title, image, width, height) VALUES
+('Vesper Crypto Wallet', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop', 1000, 1000),
+('Zenith Mobile App', 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=600&auto=format&fit=crop', 800, 1200),
+('Aura Workspace System', 'https://images.unsplash.com/photo-1604871000636-074fa5117945?q=80&w=600&auto=format&fit=crop', 800, 1200),
+('Aether Landing Page', 'https://images.unsplash.com/photo-1785301973694-d95aebf5bdb8?q=80&w=990&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA==', 1000, 1000),
+('Smart Home Interface', 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=600&auto=format&fit=crop', 1000, 1000),
+('Futuristic Core Render', 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=600&auto=format&fit=crop', 800, 1200);
 
 -- Seed Experiences
 INSERT INTO experience (company, role, dates) VALUES

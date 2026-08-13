@@ -1,5 +1,5 @@
 import { LoadingWave } from "@/components/loading-wave";
 
-export default function LoadingPage() {
+export default function Loading() {
     return <LoadingWave />;
 }

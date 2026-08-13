@@ -1,6 +1,12 @@
 "use server";
 
-import { supabase, Project, CaseStudy, Design, Experience, Stats } from "@/lib/supabase";
+import sharp from "sharp";
+import { supabase, supabaseAdmin, Project, CaseStudy, Design, Experience, Stats } from "@/lib/supabase";
+
+type UploadDesignImageInput = {
+  title: string;
+  imageUrl: string;
+};
 
 /**
  * Fetches all portfolio projects from Supabase, then sorts them by their displayed number.
@@ -65,7 +71,7 @@ export async function getDesigns(): Promise<Design[]> {
   try {
     const { data, error } = await supabase
       .from("designs")
-      .select("*")
+      .select("id, title, image, width, height, aspect_ratio, created_at, updated_at")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -77,6 +83,53 @@ export async function getDesigns(): Promise<Design[]> {
   } catch (err) {
     console.error("Unexpected error in getDesigns Server Action:", err);
     return [];
+  }
+}
+
+/**
+ * Uploads a design record after extracting image dimensions with Sharp.
+ * Expects a publicly accessible image URL (for example, a Cloudinary secure URL).
+ */
+export async function uploadDesignImage({
+  title,
+  imageUrl,
+}: UploadDesignImageInput): Promise<Design | null> {
+  try {
+    const response = await fetch(imageUrl);
+
+    if (!response.ok) {
+      console.error("Failed to fetch image for design upload:", response.status, response.statusText);
+      return null;
+    }
+
+    const imageArrayBuffer = await response.arrayBuffer();
+    const imageMetadata = await sharp(Buffer.from(imageArrayBuffer)).metadata();
+
+    if (!imageMetadata.width || !imageMetadata.height) {
+      console.error("Sharp could not determine image width/height for:", imageUrl);
+      return null;
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("designs")
+      .insert({
+        title,
+        image: imageUrl,
+        width: imageMetadata.width,
+        height: imageMetadata.height,
+      })
+      .select("id, title, image, width, height, aspect_ratio, created_at, updated_at")
+      .single();
+
+    if (error) {
+      console.error("Error in uploadDesignImage Server Action:", error.message);
+      return null;
+    }
+
+    return data as Design;
+  } catch (err) {
+    console.error("Unexpected error in uploadDesignImage Server Action:", err);
+    return null;
   }
 }
 

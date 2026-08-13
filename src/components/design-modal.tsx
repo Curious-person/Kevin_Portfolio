@@ -11,7 +11,8 @@ type DesignModalProps = {
   design: {
     title: string;
     image: string;
-    aspectRatio?: string;
+    width?: number;
+    height?: number;
   } | null;
 };
 
@@ -29,6 +30,11 @@ export function DesignModal({ open, onClose, design }: DesignModalProps) {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [open, onClose]);
+
+  const designRatio =
+    design && design.width && design.height && design.height > 0
+      ? design.width / design.height
+      : 2 / 3;
 
   return (
     <AnimatePresence>
@@ -75,7 +81,10 @@ export function DesignModal({ open, onClose, design }: DesignModalProps) {
             </div>
 
             {/* Image Placeholder */}
-            <div className={`relative w-full max-w-xs sm:max-w-sm md:max-w-md ${design.aspectRatio || "aspect-2/3"} bg-[#e8e8e8] rounded-3xl overflow-hidden shadow-lg mt-10`}>
+            <div
+              className="relative w-full max-w-xs sm:max-w-sm md:max-w-md bg-[#e8e8e8] rounded-3xl overflow-hidden shadow-lg mt-10"
+              style={{ aspectRatio: designRatio, width: "100%" }}
+            >
               <Image
                 src={design.image}
                 alt={design.title}

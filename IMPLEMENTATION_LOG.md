@@ -1,5 +1,15 @@
 # Implementation Log
 
+## 2026-08-13 — Pinterest-style dynamic design image ratios
+
+**What was done:** Replaced class-based design aspect ratios with dimension-based rendering. Updated `DesignCard` to compute ratio from `width/height` and render masonry cards with fixed width + proportional height. Updated `DesignGallery` and `DesignModal` payloads to pass dimension fields.
+
+**Design system considerations:** Preserved `rounded-[24px]`, hover lift/scale transitions, overlay gradient, and masonry spacing (`mb-8`, `break-inside-avoid`) while switching only the ratio source.
+
+**Reuse check:** Reused existing design gallery/card/modal structure and animation hooks. Changed data shaping only where dimension fields were required.
+
+**Library usage:** Added `sharp` integration in server action `uploadDesignImage()` to read source image metadata and persist `width`/`height` in Supabase. Added PostgreSQL migration script for existing `designs` rows.
+
 ## 2026-07-21 — DESIGN.md refresh from Figma reference
 
 **What was done:** Updated the portfolio design spec to match the selected Figma frame, including the blue hero, dark pill navigation, serif headlines, and light-grey project cards.
