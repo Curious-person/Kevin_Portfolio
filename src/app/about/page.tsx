@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { PortfolioNav } from "@/components/portfolio-nav";
+import { ContactSection } from "@/components/contact-section";
 import { getExperience } from "@/app/actions/portfolio";
 import { portrait, MapPinIcon, GraduationCapIcon, RulerIcon, HeartIcon, LightbulbIcon } from "@/lib/constants";
 
@@ -113,6 +114,7 @@ export default async function AboutPage() {
                     </div>
                 </div>
             </section>
+            <ContactSection />
         </main>
     );
 }

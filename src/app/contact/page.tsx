@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { PortfolioNav } from "@/components/portfolio-nav";
+import { ContactSection } from "@/components/contact-section";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -224,6 +225,7 @@ export default function ContactPage() {
                     </form>
                 </div>
             </section>
+            <ContactSection />
         </main>
     );
 }

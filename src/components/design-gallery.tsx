@@ -41,6 +41,7 @@ export function DesignGallery({ designs }: DesignGalleryProps) {
     ? {
         id: selectedDesign.id,
         title: selectedDesign.title,
+        description: selectedDesign.description,
         image: selectedDesign.image,
         width: selectedDesign.width,
         height: selectedDesign.height,

@@ -10,6 +10,7 @@ type DesignModalProps = {
   onClose: () => void;
   design: {
     title: string;
+    description?: string | null;
     image: string;
     width?: number;
     height?: number;
@@ -76,7 +77,7 @@ export function DesignModal({ open, onClose, design }: DesignModalProps) {
             {/* Description Area */}
             <div className="flex flex-col items-center px-4 max-w-lg">
               <p className="font-sans text-sm md:text-base text-neutral-400 leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+                {design.description || "No description provided."}
               </p>
             </div>
 

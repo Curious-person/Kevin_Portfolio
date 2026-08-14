@@ -57,6 +57,7 @@ export interface CaseStudy {
 export interface Design {
   id: string;
   title: string;
+  description?: string | null;
   image: string; // Cloudinary secure URL
   width: number;
   height: number;

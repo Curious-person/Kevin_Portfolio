@@ -11,6 +11,7 @@
 | `tag` | `varchar` |  |
 | `created_at` | `timestamptz` |  |
 | `updated_at` | `timestamptz` |  |
+| `image_url` | `text` |  Nullable |
 
 ## Table `case_studies`
 
@@ -34,10 +35,13 @@
 |------|------|-------------|
 | `id` | `uuid` | Primary |
 | `title` | `varchar` |  |
+| `description` | `text` | Nullable |
 | `image` | `text` |  |
-| `aspect_ratio` | `varchar` |  |
 | `created_at` | `timestamptz` |  |
 | `updated_at` | `timestamptz` |  |
+| `width` | `int4` |  |
+| `height` | `int4` |  |
+| `aspect_ratio` | `numeric` |  Nullable |
 
 ## Table `experience`
 
@@ -127,12 +131,6 @@
 
 ## RLS Policies
 
-### `stats`
-
-| Policy | Command | Roles | Action | USING | WITH CHECK |
-|--------|---------|-------|--------|-------|------------|
-| `Allow public read access on stats` | SELECT | public | PERMISSIVE | `true` | — |
-
 ### `experience`
 
 | Policy | Command | Roles | Action | USING | WITH CHECK |
@@ -146,29 +144,31 @@
 | `Allow only authenticated users to view submissions` | SELECT | authenticated | PERMISSIVE | `true` | — |
 | `Allow public insert access on contact_submissions` | INSERT | public | PERMISSIVE | — | `true` |
 
+### `designs`
+
+| Policy | Command | Roles | Action | USING | WITH CHECK |
+|--------|---------|-------|--------|-------|------------|
+| `Allow anonymous inserts` | INSERT | anon | PERMISSIVE | — | `true` |
+| `Allow insert on designs for service role` | INSERT | service_role | PERMISSIVE | — | `true` |
+| `Allow public read access on designs` | SELECT | public | PERMISSIVE | `true` | — |
+
+### `stats`
+
+| Policy | Command | Roles | Action | USING | WITH CHECK |
+|--------|---------|-------|--------|-------|------------|
+| `Allow public read access on stats` | SELECT | public | PERMISSIVE | `true` | — |
+
 ### `case_studies`
 
 | Policy | Command | Roles | Action | USING | WITH CHECK |
 |--------|---------|-------|--------|-------|------------|
 | `Allow public read access on case_studies` | SELECT | public | PERMISSIVE | `true` | — |
 
-### `projects`
-
-| Policy | Command | Roles | Action | USING | WITH CHECK |
-|--------|---------|-------|--------|-------|------------|
-| `Allow public read access on projects` | SELECT | public | PERMISSIVE | `true` | — |
-
 ### `resumes`
 
 | Policy | Command | Roles | Action | USING | WITH CHECK |
 |--------|---------|-------|--------|-------|------------|
 | `Allow public read resumes` | SELECT | public | PERMISSIVE | `true` | — |
-
-### `designs`
-
-| Policy | Command | Roles | Action | USING | WITH CHECK |
-|--------|---------|-------|--------|-------|------------|
-| `Allow public read access on designs` | SELECT | public | PERMISSIVE | `true` | — |
 
 ### `resume_requests`
 
@@ -181,4 +181,10 @@
 | Policy | Command | Roles | Action | USING | WITH CHECK |
 |--------|---------|-------|--------|-------|------------|
 | `Allow public read` | SELECT | public | PERMISSIVE | `true` | — |
+
+### `projects`
+
+| Policy | Command | Roles | Action | USING | WITH CHECK |
+|--------|---------|-------|--------|-------|------------|
+| `Allow public read access on projects` | SELECT | public | PERMISSIVE | `true` | — |
 
