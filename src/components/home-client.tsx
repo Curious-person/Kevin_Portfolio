@@ -17,6 +17,7 @@ import { ProjectCard } from "@/components/project-card";
 import { CaseStudyCard } from "@/components/case-study-card";
 import { DesignGallery } from "@/components/design-gallery";
 import { ProjectDetailSheet } from "@/components/project-detail-sheet";
+import { CaseStudyDetailSheet } from "@/components/case-study-detail-sheet";
 import { ContactSection } from "@/components/contact-section";
 import { SocialIcon } from "@/components/social-icon";
 import { Project, CaseStudy, Design, Stats } from "@/lib/supabase";
@@ -46,7 +47,8 @@ export function HomeClient({
   skills,
 }: HomeClientProps) {
   const [activeTab, setActiveTab] = useState<PortfolioTab>("projects");
-  const [selectedProject, setSelectedProject] = useState<Project | CaseStudy | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedCaseStudy, setSelectedCaseStudy] = useState<CaseStudy | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isHoveringInteractive, setIsHoveringInteractive] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
@@ -237,7 +239,7 @@ export function HomeClient({
                       key={cs.id}
                       title={cs.title}
                       description={cs.description}
-                      onClick={() => setSelectedProject(cs)}
+                      onClick={() => setSelectedCaseStudy(cs)}
                     />
                   ))}
               </motion.div>
@@ -256,6 +258,15 @@ export function HomeClient({
         title={selectedProject?.title ?? ""}
         description={selectedProject?.description ?? ""}
         onClose={() => setSelectedProject(null)}
+      />
+
+      {/* Case Study Detail Sheet */}
+      <CaseStudyDetailSheet
+        open={selectedCaseStudy !== null}
+        caseStudyId={selectedCaseStudy?.id ?? null}
+        title={selectedCaseStudy?.title ?? ""}
+        description={selectedCaseStudy?.description ?? ""}
+        onClose={() => setSelectedCaseStudy(null)}
       />
     </main>
   );
