@@ -1,24 +1,40 @@
-import { ArrowUpRight, Code2, Cpu, Layout, Sparkles } from "lucide-react";
-import Sidebar from "@/components/sidebar";
-import ImageCard from "@/components/imagecard";
+import { getProjects, getCaseStudies, getDesigns, getStats } from "@/app/actions/portfolio";
+import { HomeClient } from "@/components/home-client";
 
-export default function Home() {
+// Revalidate cache every hour (or set to 0 to disable cache/always fetch fresh)
+export const revalidate = 3600; 
+
+const skills = [
+  "USER RESEARCH",
+  "USABILITY TESTING",
+  "LANDING PAGE DESIGN",
+  "FRONTEND DEVELOPMENT",
+  "BACKEND DEVELOPMENT",
+  "REST API INTEGRATION",
+  "AUTHENTICATION",
+];
+
+/**
+ * Portfolio homepage Server Component.
+ * Fetches all necessary data from Supabase at render time in parallel,
+ * then passes it to the interactive Client Component wrapper.
+ */
+export default async function HomePage() {
+  // Fetch data in parallel on the server
+  const [projects, caseStudies, designs, stats] = await Promise.all([
+    getProjects(),
+    getCaseStudies(),
+    getDesigns(),
+    getStats(),
+  ]);
+
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-
-      <div className="grid grid-cols-2 gap-4 p-8 w-full">
-        <ImageCard
-          title="NU Space"
-          description="Document Management System"
-          imageSource="/images/nuspace_mockup.mp4" />
-        <ImageCard />
-        <ImageCard />
-        <ImageCard
-          title="Project ATL - Antipolo TODA Map"
-          description="Interactive Map with Real-time TODA Tracking"
-          imageSource={"/images/atl_media.png"} />
-      </div>
-    </div>
+    <HomeClient
+      projects={projects}
+      caseStudies={caseStudies}
+      designs={designs}
+      stats={stats}
+      skills={skills}
+    />
   );
 }

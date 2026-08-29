@@ -1,0 +1,20 @@
+import { ArrowRight, Download, X, Send, MapPin, Phone, MessageCircle, GraduationCap, Heart, Lightbulb, Ruler } from "lucide-react";
+import { faGithub, faLinkedin, faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons";
+
+export const heroTexture = "https://images.unsplash.com/photo-1777661097541-e9ebeffe6aa2?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+export const portrait = "https://res.cloudinary.com/f7zsvwe2/image/upload/v1786283196/NU_Graduation_Pictorial_Day_10-2773.jpg";
+export const githubIcon = faGithub;
+export const linkedinIcon = faLinkedin;
+export const facebookIcon = faFacebook;
+export const instagramIcon = faInstagram;
+export const ArrowRightIcon = ArrowRight;
+export const DownloadIcon = Download;
+export const CloseIcon = X;
+export const SendIcon = Send;
+export const MapPinIcon = MapPin;
+export const PhoneIcon = Phone;
+export const MessageIcon = MessageCircle;
+export const GraduationCapIcon = GraduationCap;
+export const HeartIcon = Heart;
+export const LightbulbIcon = Lightbulb;
+export const RulerIcon = Ruler;
