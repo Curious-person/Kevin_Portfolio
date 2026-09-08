@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CloseIcon } from "@/lib/constants";
-import { supabase, ProjectDetail } from "@/lib/supabase";
+import { supabase, ProjectSection, ProjectWithSections } from "@/lib/supabase";
 
 type ProjectDetailSheetProps = {
     open: boolean;
@@ -42,7 +42,7 @@ export function ProjectDetailSheet({
     description,
     onClose,
 }: ProjectDetailSheetProps) {
-    const [projectDetail, setProjectDetail] = useState<ProjectDetail | null>(null);
+    const [sections, setSections] = useState<ProjectSection[]>([]);
     const [isLoadingDetail, setIsLoadingDetail] = useState(false);
 
     useEffect(() => {
@@ -69,7 +69,7 @@ export function ProjectDetailSheet({
 
     useEffect(() => {
         if (!open || !projectId) {
-            setProjectDetail(null);
+            setSections([]);
             return;
         }
 
@@ -79,22 +79,25 @@ export function ProjectDetailSheet({
             setIsLoadingDetail(true);
 
             const { data, error } = await supabase
-                .from("project_details")
-                .select("*")
-                .eq("project_id", projectId)
+                .from("projects")
+                .select("*, project_sections(*)")
+                .eq("id", projectId)
+                .order("sequence_order", { ascending: true, referencedTable: "project_sections" })
                 .maybeSingle();
 
             if (!isMounted) {
                 return;
             }
 
-            if (error) {
-                setProjectDetail(null);
+            if (error || !data) {
+                setSections([]);
                 setIsLoadingDetail(false);
                 return;
             }
 
-            setProjectDetail((data as ProjectDetail | null) ?? null);
+            const projectData = data as unknown as ProjectWithSections;
+            const fetchedSections = projectData.project_sections ?? [];
+            setSections(fetchedSections);
             setIsLoadingDetail(false);
         };
 
@@ -104,17 +107,6 @@ export function ProjectDetailSheet({
             isMounted = false;
         };
     }, [open, projectId]);
-
-    const section1Title = projectDetail?.section1_title || "Overview";
-    const section1Text = projectDetail?.section1_text || description;
-    const section1ImageUrl = projectDetail?.section1_image_url;
-
-    const section2Title = projectDetail?.section2_title || "Process";
-    const section2Text = projectDetail?.section2_text || description;
-    const section2ImageUrl = projectDetail?.section2_image_url;
-
-    const section3Title = projectDetail?.section3_title || "Result";
-    const section3ImageUrl = projectDetail?.section3_image_url;
 
     return (
         <AnimatePresence>
@@ -159,41 +151,92 @@ export function ProjectDetailSheet({
                                 ) : null}
 
                                 <div className="mt-10 w-full space-y-14 sm:mt-12 sm:space-y-20">
-                                    <section className="grid gap-5 md:grid-cols-[0.95fr_1.05fr] md:items-start md:gap-8">
-                                        <DetailImageBlock imageUrl={section1ImageUrl} caption={section1Text} />
-                                        <div className="md:pt-1">
-                                            <h3 className="text-2xl font-semibold leading-tight text-[#444]">
-                                                {section1Title}
-                                            </h3>
-                                            <p className="mt-3 text-base leading-6 text-[#444]/95 sm:text-[18px] sm:leading-[1.45]">
-                                                {section1Text}
-                                            </p>
-                                        </div>
-                                    </section>
+                                    {sections.length > 0 ? (
+                                        sections.map((section, idx) => {
+                                            const sectionTitle = section.title || (idx === 0 ? "Overview" : idx === 1 ? "Process" : "Result");
 
-                                    <section className="grid gap-5 md:grid-cols-[1.05fr_0.95fr] md:items-start md:gap-8">
-                                        <div className="md:pt-1">
-                                            <h3 className="text-2xl font-semibold leading-tight text-[#444]">
-                                                {section2Title}
-                                            </h3>
-                                            <p className="mt-3 text-base leading-6 text-[#444]/95 sm:text-[18px] sm:leading-[1.45]">
-                                                {section2Text}
-                                            </p>
-                                        </div>
-                                        <DetailImageBlock imageUrl={section2ImageUrl} />
-                                    </section>
+                                            if (section.content_text && section.image_url) {
+                                                const isEven = idx % 2 === 0;
+                                                return (
+                                                    <section
+                                                        key={section.id || idx}
+                                                        className={`grid gap-5 md:items-start md:gap-8 ${
+                                                            isEven
+                                                                ? "md:grid-cols-[0.95fr_1.05fr]"
+                                                                : "md:grid-cols-[1.05fr_0.95fr]"
+                                                        }`}
+                                                    >
+                                                        {isEven ? (
+                                                            <>
+                                                                <DetailImageBlock imageUrl={section.image_url} caption={section.content_text} />
+                                                                <div className="md:pt-1">
+                                                                    <h3 className="text-2xl font-semibold leading-tight text-[#444]">
+                                                                        {sectionTitle}
+                                                                    </h3>
+                                                                    <p className="mt-3 text-base leading-6 text-[#444]/95 sm:text-[18px] sm:leading-[1.45]">
+                                                                        {section.content_text}
+                                                                    </p>
+                                                                </div>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <div className="md:pt-1">
+                                                                    <h3 className="text-2xl font-semibold leading-tight text-[#444]">
+                                                                        {sectionTitle}
+                                                                    </h3>
+                                                                    <p className="mt-3 text-base leading-6 text-[#444]/95 sm:text-[18px] sm:leading-[1.45]">
+                                                                        {section.content_text}
+                                                                    </p>
+                                                                </div>
+                                                                <DetailImageBlock imageUrl={section.image_url} />
+                                                            </>
+                                                        )}
+                                                    </section>
+                                                );
+                                            }
 
-                                    <section className="space-y-5">
-                                        <h3 className="text-center text-2xl font-semibold leading-tight text-[#444]">
-                                            {section3Title}
-                                        </h3>
-                                        <div
-                                            className="h-55 w-full rounded-3xl bg-[#d9d9d9] bg-cover bg-center sm:h-84.5"
-                                            style={section3ImageUrl ? { backgroundImage: `url(${section3ImageUrl})` } : undefined}
-                                            role="img"
-                                            aria-label="Project result image"
-                                        />
-                                    </section>
+                                            if (section.image_url && !section.content_text) {
+                                                return (
+                                                    <section key={section.id || idx} className="space-y-5">
+                                                        <h3 className="text-center text-2xl font-semibold leading-tight text-[#444]">
+                                                            {sectionTitle}
+                                                        </h3>
+                                                        <div
+                                                            className="h-55 w-full rounded-3xl bg-[#d9d9d9] bg-cover bg-center sm:h-84.5"
+                                                            style={{ backgroundImage: `url(${section.image_url})` }}
+                                                            role="img"
+                                                            aria-label={sectionTitle}
+                                                        />
+                                                    </section>
+                                                );
+                                            }
+
+                                            return (
+                                                <section key={section.id || idx} className="space-y-3">
+                                                    <h3 className="text-2xl font-semibold leading-tight text-[#444]">
+                                                        {sectionTitle}
+                                                    </h3>
+                                                    {section.content_text ? (
+                                                        <p className="text-base leading-6 text-[#444]/95 sm:text-[18px] sm:leading-[1.45]">
+                                                            {section.content_text}
+                                                        </p>
+                                                    ) : null}
+                                                </section>
+                                            );
+                                        })
+                                    ) : !isLoadingDetail ? (
+                                        <section className="grid gap-5 md:grid-cols-[0.95fr_1.05fr] md:items-start md:gap-8">
+                                            <DetailImageBlock imageUrl={null} caption={description} />
+                                            <div className="md:pt-1">
+                                                <h3 className="text-2xl font-semibold leading-tight text-[#444]">
+                                                    Overview
+                                                </h3>
+                                                <p className="mt-3 text-base leading-6 text-[#444]/95 sm:text-[18px] sm:leading-[1.45]">
+                                                    {description}
+                                                </p>
+                                            </div>
+                                        </section>
+                                    ) : null}
                                 </div>
                             </div>
                         </div>
@@ -203,3 +246,4 @@ export function ProjectDetailSheet({
         </AnimatePresence>
     );
 }
+

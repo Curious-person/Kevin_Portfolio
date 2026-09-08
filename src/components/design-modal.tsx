@@ -70,16 +70,9 @@ export function DesignModal({ open, onClose, design }: DesignModalProps) {
           >
 
             {/* Title Area */}
-            <h2 className="font-serif text-5xl md:text-6xl font-light text-white mb-6 tracking-wide">
+            <h2 className="font-serif text-5xl md:text-6xl font-light text-white tracking-wide">
               {design.title}
             </h2>
-
-            {/* Description Area */}
-            <div className="flex flex-col items-center px-4 max-w-lg">
-              <p className="font-sans text-sm md:text-base text-neutral-400 leading-relaxed">
-                {design.description || "No description provided."}
-              </p>
-            </div>
 
             {/* Image Placeholder */}
             <div

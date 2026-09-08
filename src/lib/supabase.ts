@@ -47,6 +47,8 @@ export interface CaseStudy {
   title: string;
   description: string;
   tag: string;
+  status?: string | null;
+  image_url?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -129,19 +131,23 @@ export interface ResumeRequest {
 }
 
 /**
- * Type definition for expanded project detail sections.
+ * Type definition for a dynamic project detail section.
  */
-export interface ProjectDetail {
+export interface ProjectSection {
   id: string;
   project_id: string;
-  section1_title?: string | null;
-  section1_text?: string | null;
-  section1_image_url?: string | null;
-  section2_title?: string | null;
-  section2_text?: string | null;
-  section2_image_url?: string | null;
-  section3_title?: string | null;
-  section3_image_url?: string | null;
+  sequence_order: number;
+  title?: string | null;
+  content_text?: string | null;
+  image_url?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
 }
+
+/**
+ * Type definition for a Project combined with its dynamic sections.
+ */
+export interface ProjectWithSections extends Project {
+  project_sections: ProjectSection[];
+}
+

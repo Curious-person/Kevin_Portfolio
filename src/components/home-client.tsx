@@ -239,6 +239,8 @@ export function HomeClient({
                       key={cs.id}
                       title={cs.title}
                       description={cs.description}
+                      status={cs.status}
+                      imageUrl={cs.image_url}
                       onClick={() => setSelectedCaseStudy(cs)}
                     />
                   ))}

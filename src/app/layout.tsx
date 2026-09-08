@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Instrument_Serif } from "next/font/google";
 import "./globals.css";
+import { PageTransition } from "@/components/page-transition";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,6 +34,7 @@ export default function RootLayout({
         className="min-h-full bg-background text-foreground font-sans"
         suppressHydrationWarning
       >
+        <PageTransition />
         {children}
       </body>
     </html>
