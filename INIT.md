@@ -119,23 +119,32 @@ This section documents the JSON structures of static data used across the portfo
   ```
 
 ### 3. Designs (`designs` in `src/components/design-gallery.tsx`)
-* **JSON Structure:**
+* **JSON Structure (Supabase Row):**
   ```json
   {
-    "id": "design-1",
+    "id": "123e4567-e89b-12d3-a456-426614174000",
     "title": "Vesper Crypto Wallet",
-    "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop",
-    "aspectRatio": "aspect-square"
+    "description": null,
+    "image": "https://res.cloudinary.com/.../image/upload/.../vesper.jpg",
+    "width": 1200,
+    "height": 800,
+    "aspect_ratio": 1.5,
+    "created_at": "2026-08-13T10:00:00Z",
+    "updated_at": "2026-08-13T10:00:00Z"
   }
   ```
 * **SQL Reference DDL:**
   ```sql
   CREATE TABLE designs (
-      id VARCHAR(50) PRIMARY KEY,
-      title VARCHAR(100) NOT NULL,
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+      title VARCHAR(255) NOT NULL,
+      description TEXT,
       image TEXT NOT NULL,
-      aspect_ratio VARCHAR(50) DEFAULT 'aspect-square',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      width INTEGER NOT NULL,
+      height INTEGER NOT NULL,
+      aspect_ratio NUMERIC NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
   );
   ```
 
@@ -202,6 +211,22 @@ This section documents the JSON structures of static data used across the portfo
       offset_class VARCHAR(50) DEFAULT 'lg:translate-y-0'
   );
   ```
+
+---
+
+## 🔒 Backend & Admin Controls
+
+This portfolio leverages **Supabase** (PostgreSQL database), **Cloudinary** (image hosting), and **Resend** (emails) for dynamic data management instead of static JSON.
+
+### Server Actions & Data Fetching
+* **Data Fetching:** Fetching operations (e.g., `getProjects()`, `getDesigns()`) are managed via Next.js Server Actions referencing the `supabase` client. Data responses are typed against `src/lib/supabase.ts`.
+* **Performance:** Server-fetched data handles caching and is statically regenerated to maintain optimal site speeds.
+
+### Admin Controls & Uploads
+An administrative interface is located at `/admin/design-upload` to upload and list new designs without manually altering database records or codebase files.
+* **Authentication:** Access to the upload operations is secured by the `DESIGN_UPLOAD_ADMIN_KEY` environment variable. 
+* **Database Admin Client:** High-privilege writes bypass Row Level Security (RLS) by executing through the `supabaseAdmin` client, initialized using the `SUPABASE_SERVICE_ROLE_KEY`.
+* **Automated Processing:** When submitting a new design URL (from Cloudinary), a server action (`uploadDesignImage`) fetches the remote image and processes it via the `sharp` library to automatically calculate the image's `width`, `height`, and `aspect_ratio` before it persists the row to the database. This allows masonry grids to render without layout shifts.
 
 ---
 

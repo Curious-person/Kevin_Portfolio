@@ -1,7 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(useGSAP);
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import { CloseIcon } from "@/lib/constants";
 import { supabase, ProjectSection, ProjectWithSections } from "@/lib/supabase";
 
@@ -13,6 +19,53 @@ type ProjectDetailSheetProps = {
     onClose: () => void;
 };
 
+function ImageCarousel({ images, caption }: { images: string[]; caption?: string }) {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (images.length <= 1) return;
+        const interval = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % images.length);
+        }, 3000);
+        return () => clearInterval(interval);
+    }, [images.length]);
+
+    useGSAP(() => {
+        gsap.to(".slides-container", {
+            xPercent: -100 * currentIndex,
+            duration: 0.6,
+            ease: "power2.inOut"
+        });
+    }, { dependencies: [currentIndex], scope: containerRef });
+
+    return (
+        <div ref={containerRef} className="relative h-55 w-full overflow-hidden rounded-3xl bg-[#d9d9d9] sm:h-72">
+            <div className="slides-container absolute inset-0 flex h-full w-full">
+                {images.map((img, idx) => (
+                    <div
+                        key={idx}
+                        className="h-full w-full flex-shrink-0 bg-cover bg-center"
+                        style={{ backgroundImage: `url(${img})` }}
+                        role="img"
+                        aria-label={caption || `Project image ${idx + 1}`}
+                    />
+                ))}
+            </div>
+            <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2 z-10">
+                {images.map((_, idx) => (
+                    <div
+                        key={idx}
+                        className={`h-2 w-2 rounded-full transition-colors ${
+                            idx === currentIndex ? "bg-white" : "bg-white/50"
+                        }`}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+}
+
 function DetailImageBlock({
     imageUrl,
     caption,
@@ -20,14 +73,34 @@ function DetailImageBlock({
     imageUrl?: string | null;
     caption?: string;
 }) {
+    const images = imageUrl ? imageUrl.split(',').map(url => url.trim()).filter(Boolean) : [];
+    const isMultiple = images.length > 1;
+    const isVideo = !isMultiple && images[0]?.match(/\.mp4($|\?)/i);
+
     return (
         <div className="flex flex-col items-center gap-2">
-            <div
-                className="h-55 w-full rounded-3xl bg-[#d9d9d9] bg-cover bg-center sm:h-72"
-                style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
-                role="img"
-                aria-label={caption || "Project detail image"}
-            />
+            {isMultiple ? (
+                <ImageCarousel images={images} caption={caption} />
+            ) : (
+                <div
+                    className="relative h-55 w-full overflow-hidden rounded-3xl bg-[#d9d9d9] bg-cover bg-center sm:h-72"
+                    style={!isVideo && images[0] ? { backgroundImage: `url(${images[0]})` } : undefined}
+                    role={!isVideo ? "img" : undefined}
+                    aria-label={!isVideo ? (caption || "Project detail image") : undefined}
+                >
+                    {isVideo && (
+                        <video
+                            src={images[0]}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="absolute inset-0 h-full w-full object-cover"
+                            aria-label={caption || "Project detail video"}
+                        />
+                    )}
+                </div>
+            )}
             {caption ? (
                 <p className="text-center text-sm text-[#777] sm:text-base">{caption}</p>
             ) : null}
@@ -147,7 +220,26 @@ export function ProjectDetailSheet({
                                 </h2>
 
                                 {isLoadingDetail ? (
-                                    <p className="mt-6 text-sm text-[#666] sm:text-base">Loading project details...</p>
+                                    <div className="mt-10 w-full space-y-14 sm:mt-12 sm:space-y-20">
+                                        <section className="grid gap-5 md:grid-cols-[0.95fr_1.05fr] md:items-start md:gap-8">
+                                            <div className="h-55 w-full sm:h-72">
+                                                <Skeleton height="100%" borderRadius="1.5rem" />
+                                            </div>
+                                            <div className="md:pt-1">
+                                                <Skeleton height={32} width="40%" className="mb-3" />
+                                                <Skeleton count={4} className="mb-2" />
+                                            </div>
+                                        </section>
+                                        <section className="grid gap-5 md:grid-cols-[1.05fr_0.95fr] md:items-start md:gap-8">
+                                            <div className="md:pt-1">
+                                                <Skeleton height={32} width="40%" className="mb-3" />
+                                                <Skeleton count={4} className="mb-2" />
+                                            </div>
+                                            <div className="h-55 w-full sm:h-72">
+                                                <Skeleton height="100%" borderRadius="1.5rem" />
+                                            </div>
+                                        </section>
+                                    </div>
                                 ) : null}
 
                                 <div className="mt-10 w-full space-y-14 sm:mt-12 sm:space-y-20">
@@ -196,17 +288,30 @@ export function ProjectDetailSheet({
                                             }
 
                                             if (section.image_url && !section.content_text) {
+                                                const isSectionVideo = section.image_url.match(/\.mp4($|\?)/i);
                                                 return (
                                                     <section key={section.id || idx} className="space-y-5">
                                                         <h3 className="text-center text-2xl font-semibold leading-tight text-[#444]">
                                                             {sectionTitle}
                                                         </h3>
                                                         <div
-                                                            className="h-55 w-full rounded-3xl bg-[#d9d9d9] bg-cover bg-center sm:h-84.5"
-                                                            style={{ backgroundImage: `url(${section.image_url})` }}
-                                                            role="img"
-                                                            aria-label={sectionTitle}
-                                                        />
+                                                            className="relative h-55 w-full overflow-hidden rounded-3xl bg-[#d9d9d9] bg-cover bg-center sm:h-84.5"
+                                                            style={!isSectionVideo ? { backgroundImage: `url(${section.image_url})` } : undefined}
+                                                            role={!isSectionVideo ? "img" : undefined}
+                                                            aria-label={!isSectionVideo ? sectionTitle : undefined}
+                                                        >
+                                                            {isSectionVideo && (
+                                                                <video
+                                                                    src={section.image_url}
+                                                                    autoPlay
+                                                                    loop
+                                                                    muted
+                                                                    playsInline
+                                                                    className="absolute inset-0 h-full w-full object-cover"
+                                                                    aria-label={sectionTitle}
+                                                                />
+                                                            )}
+                                                        </div>
                                                     </section>
                                                 );
                                             }

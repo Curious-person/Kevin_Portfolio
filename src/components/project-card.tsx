@@ -18,6 +18,7 @@ export function ProjectCard({
   onClick?: () => void;
 }) {
   const previewImage = imageUrl || heroTexture;
+  const isVideo = previewImage.match(/\.mp4($|\?)/i);
   const tagLabels = tag
     .split(",")
     .map((label) => label.trim())
@@ -64,14 +65,26 @@ export function ProjectCard({
       </div>
 
       <div className="relative z-10 min-h-67.5 overflow-hidden rounded-[20px] bg-[#dde3e8]">
-        <Image
-          src={previewImage}
-          alt={`${title} preview`}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 457px"
-          unoptimized
-        />
+        {isVideo ? (
+          <video
+            src={previewImage}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 h-full w-full object-cover"
+            aria-label={`${title} preview`}
+          />
+        ) : (
+          <Image
+            src={previewImage}
+            alt={`${title} preview`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 457px"
+            unoptimized
+          />
+        )}
       </div>
     </button>
   );

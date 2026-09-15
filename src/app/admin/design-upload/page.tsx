@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
-import { uploadDesignImage } from "@/app/actions/portfolio";
+import { uploadDesignMedia } from "@/app/actions/portfolio";
 
 async function submitDesign(formData: FormData) {
 	"use server";
@@ -14,17 +14,19 @@ async function submitDesign(formData: FormData) {
 
 	const submittedAdminKey = String(formData.get("adminKey") ?? "").trim();
 	const title = String(formData.get("title") ?? "").trim();
-	const imageUrl = String(formData.get("imageUrl") ?? "").trim();
+	const link = String(formData.get("link") ?? formData.get("imageUrl") ?? "").trim();
+	const typeRaw = String(formData.get("type") ?? "image").trim();
+	const type: "image" | "video" = typeRaw === "video" ? "video" : "image";
 
 	if (submittedAdminKey !== expectedAdminKey) {
 		redirect("/admin/design-upload?status=unauthorized");
 	}
 
-	if (!title || !imageUrl) {
+	if (!title || !link) {
 		redirect("/admin/design-upload?status=missing-fields");
 	}
 
-	const created = await uploadDesignImage({ title, imageUrl });
+	const created = await uploadDesignMedia({ title, link, type });
 
 	if (!created) {
 		redirect("/admin/design-upload?status=failed");
@@ -54,8 +56,8 @@ export default async function DesignUploadPage({ searchParams }: DesignUploadPag
 		<main className="mx-auto min-h-screen w-full max-w-xl px-6 py-12">
 			<h1 className="mb-2 font-serif text-4xl text-slate-900">Design Upload</h1>
 			<p className="mb-8 text-sm text-slate-600">
-				Submit a Cloudinary image URL. Width and height are auto-detected with
-				Sharp before inserting the row.
+				Submit a Cloudinary image or public media URL (e.g., standard YouTube video links). Width and height
+				are auto-detected for images.
 			</p>
 
 			{status === "success" && (
@@ -72,7 +74,7 @@ export default async function DesignUploadPage({ searchParams }: DesignUploadPag
 
 			{status === "missing-fields" && (
 				<p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-					Title and image URL are required.
+					Title and media link are required.
 				</p>
 			)}
 
@@ -113,15 +115,30 @@ export default async function DesignUploadPage({ searchParams }: DesignUploadPag
 				</div>
 
 				<div>
-					<label htmlFor="imageUrl" className="mb-1 block text-sm font-medium text-slate-700">
-						Cloudinary Image URL
+					<label htmlFor="type" className="mb-1 block text-sm font-medium text-slate-700">
+						Media Type
+					</label>
+					<select
+						id="type"
+						name="type"
+						defaultValue="image"
+						className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+					>
+						<option value="image">Image</option>
+						<option value="video">Video</option>
+					</select>
+				</div>
+
+				<div>
+					<label htmlFor="link" className="mb-1 block text-sm font-medium text-slate-700">
+						Media URL / Link
 					</label>
 					<input
-						id="imageUrl"
-						name="imageUrl"
+						id="link"
+						name="link"
 						type="url"
 						required
-						placeholder="https://res.cloudinary.com/..."
+						placeholder="https://res.cloudinary.com/... or https://youtube.com/watch?v=..."
 						className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
 					/>
 				</div>

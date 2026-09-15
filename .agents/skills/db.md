@@ -37,11 +37,12 @@
 |------|------|-------------|
 | `id` | `uuid` | Primary |
 | `title` | `varchar` |  |
-| `image` | `text` |  |
+| `type` | `varchar` | Default `'image'` |
+| `link` | `text` |  |
 | `created_at` | `timestamptz` |  |
 | `updated_at` | `timestamptz` |  |
-| `width` | `int4` |  |
-| `height` | `int4` |  |
+| `width` | `int4` | Nullable |
+| `height` | `int4` | Nullable |
 | `aspect_ratio` | `numeric` |  Nullable |
 | `description` | `text` |  Nullable |
 

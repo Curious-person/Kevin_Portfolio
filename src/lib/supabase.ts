@@ -60,10 +60,11 @@ export interface Design {
   id: string;
   title: string;
   description?: string | null;
-  image: string; // Cloudinary secure URL
-  width: number;
-  height: number;
-  aspect_ratio: number;
+  type: "image" | "video";
+  link: string; // Cloudinary secure URL or video asset link
+  width?: number | null;
+  height?: number | null;
+  aspect_ratio?: number | null;
   created_at: string;
   updated_at: string;
 }
