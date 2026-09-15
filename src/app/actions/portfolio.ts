@@ -3,9 +3,10 @@
 import sharp from "sharp";
 import { supabase, supabaseAdmin, Project, CaseStudy, Design, Experience, Stats } from "@/lib/supabase";
 
-type UploadDesignImageInput = {
+type UploadDesignInput = {
   title: string;
-  imageUrl: string;
+  link: string;
+  type?: "image" | "video";
 };
 
 /**
@@ -16,7 +17,7 @@ export async function getProjects(): Promise<Project[]> {
   try {
     const { data, error } = await supabase
       .from("projects")
-      .select("*")
+      .select("*");
 
     const projects = (data as Project[]) || [];
 
@@ -64,14 +65,14 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
 
 /**
  * Fetches all designs from Supabase, ordered by creation date (newest first).
- * These entries contain Cloudinary image URLs.
+ * These entries contain Cloudinary image or video URLs.
  * @returns A promise that resolves to an array of Design objects, or an empty array on failure.
  */
 export async function getDesigns(): Promise<Design[]> {
   try {
     const { data, error } = await supabase
       .from("designs")
-      .select("id, title, image, width, height, aspect_ratio, created_at, updated_at")
+      .select("id, title, type, link, width, height, aspect_ratio, created_at, updated_at")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -87,50 +88,65 @@ export async function getDesigns(): Promise<Design[]> {
 }
 
 /**
- * Uploads a design record after extracting image dimensions with Sharp.
- * Expects a publicly accessible image URL (for example, a Cloudinary secure URL).
+ * Uploads a design record (image or video).
+ * For images, attempts to extract dimensions with Sharp.
  */
-export async function uploadDesignImage({
+export async function uploadDesignMedia({
   title,
-  imageUrl,
-}: UploadDesignImageInput): Promise<Design | null> {
+  link,
+  type = "image",
+}: UploadDesignInput): Promise<Design | null> {
   try {
-    const response = await fetch(imageUrl);
+    let width: number | null = null;
+    let height: number | null = null;
 
-    if (!response.ok) {
-      console.error("Failed to fetch image for design upload:", response.status, response.statusText);
-      return null;
-    }
-
-    const imageArrayBuffer = await response.arrayBuffer();
-    const imageMetadata = await sharp(Buffer.from(imageArrayBuffer)).metadata();
-
-    if (!imageMetadata.width || !imageMetadata.height) {
-      console.error("Sharp could not determine image width/height for:", imageUrl);
-      return null;
+    if (type === "image") {
+      try {
+        const response = await fetch(link);
+        if (response.ok) {
+          const imageArrayBuffer = await response.arrayBuffer();
+          const imageMetadata = await sharp(Buffer.from(imageArrayBuffer)).metadata();
+          if (imageMetadata.width && imageMetadata.height) {
+            width = imageMetadata.width;
+            height = imageMetadata.height;
+          }
+        }
+      } catch (err) {
+        console.warn("Could not extract image metadata with Sharp:", err);
+      }
+    } else if (type === "video") {
+      // Default 16:9 ratio for video when dimensions not specified
+      width = 1920;
+      height = 1080;
     }
 
     const { data, error } = await supabaseAdmin
       .from("designs")
       .insert({
         title,
-        image: imageUrl,
-        width: imageMetadata.width,
-        height: imageMetadata.height,
+        type,
+        link,
+        width,
+        height,
       })
-      .select("id, title, image, width, height, aspect_ratio, created_at, updated_at")
+      .select("id, title, type, link, width, height, aspect_ratio, created_at, updated_at")
       .single();
 
     if (error) {
-      console.error("Error in uploadDesignImage Server Action:", error.message);
+      console.error("Error in uploadDesignMedia Server Action:", error.message);
       return null;
     }
 
     return data as Design;
   } catch (err) {
-    console.error("Unexpected error in uploadDesignImage Server Action:", err);
+    console.error("Unexpected error in uploadDesignMedia Server Action:", err);
     return null;
   }
+}
+
+/** Legacy alias for backwards compatibility */
+export async function uploadDesignImage(input: { title: string; imageUrl: string }): Promise<Design | null> {
+  return uploadDesignMedia({ title: input.title, link: input.imageUrl, type: "image" });
 }
 
 /**

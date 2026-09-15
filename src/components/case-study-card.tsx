@@ -1,10 +1,17 @@
+import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+
 export function CaseStudyCard({
   title,
   description,
+  status,
+  imageUrl,
   onClick,
 }: {
   title: string;
   description: string;
+  status?: string | null;
+  imageUrl?: string | null;
   onClick?: () => void;
 }) {
   return (
@@ -21,7 +28,24 @@ export function CaseStudyCard({
 
       {/* Top Preview Container */}
       <div className="relative z-10 w-full aspect-[16/10] min-h-67.5 overflow-hidden rounded-[20px] bg-white shadow-inner flex items-center justify-center">
-        {/* You can add a decorative design element or screenshot here if needed, matching the empty layout by default */}
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={`${title} thumbnail`}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, 800px"
+          />
+        ) : null}
+        {status && status.toLowerCase() !== "finished" && status.toLowerCase() !== "completed" && (
+          <div className="absolute right-4 top-4 z-20">
+            <Badge 
+              className="text-xs font-medium tracking-wide uppercase shadow-sm bg-[#fc6e17] text-black hover:bg-[#fc6e17]/90"
+            >
+              {status}
+            </Badge>
+          </div>
+        )}
       </div>
 
       {/* Bottom Content */}

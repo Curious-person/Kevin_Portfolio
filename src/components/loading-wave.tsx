@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
-import { gsap } from "gsap";
+gsap.registerPlugin(useGSAP);
 
 const WIDTH = 192.44;
 const HEIGHT = 96.22;
@@ -23,69 +25,72 @@ function buildWavePoints(phase: number) {
     return points.join(" ");
 }
 
-export function LoadingWave() {
+export function LoadingWave({ isOverlay = false }: { isOverlay?: boolean }) {
+    const containerRef = useRef<HTMLDivElement | null>(null);
     const lineRef = useRef<SVGPolylineElement | null>(null);
 
-    useEffect(() => {
-        const line = lineRef.current;
+    useGSAP(
+        () => {
+            const line = lineRef.current;
 
-        if (!line) {
-            return;
-        }
-
-        const mm = gsap.matchMedia();
-
-        mm.add(
-            {
-                reduceMotion: "(prefers-reduced-motion: reduce)",
-                noPreference: "(prefers-reduced-motion: no-preference)",
-            },
-            (context) => {
-                const reduceMotion = Boolean(context.conditions?.reduceMotion);
-
-                if (reduceMotion) {
-                    line.setAttribute("points", buildWavePoints(Math.PI / 4));
-                    gsap.set(line, { autoAlpha: 0.9 });
-                    return undefined;
-                }
-
-                const motionState = { phase: 0 };
-
-                const tween = gsap.to(motionState, {
-                    phase: Math.PI * 2,
-                    duration: 2.8,
-                    ease: "none",
-                    repeat: -1,
-                    onUpdate: () => {
-                        line.setAttribute("points", buildWavePoints(motionState.phase));
-                    },
-                });
-
-                gsap.fromTo(
-                    line,
-                    { autoAlpha: 0.65 },
-                    {
-                        autoAlpha: 1,
-                        duration: 1.2,
-                        repeat: -1,
-                        yoyo: true,
-                        ease: "sine.inOut",
-                    }
-                );
-
-                return () => {
-                    tween.kill();
-                };
+            if (!line) {
+                return;
             }
-        );
 
-        return () => {
-            mm.revert();
-        };
-    }, []);
+            const mm = gsap.matchMedia();
+
+            mm.add(
+                {
+                    reduceMotion: "(prefers-reduced-motion: reduce)",
+                    noPreference: "(prefers-reduced-motion: no-preference)",
+                },
+                (context) => {
+                    const reduceMotion = Boolean(context.conditions?.reduceMotion);
+
+                    if (reduceMotion) {
+                        line.setAttribute("points", buildWavePoints(Math.PI / 4));
+                        gsap.set(line, { autoAlpha: 0.9 });
+                        return;
+                    }
+
+                    const motionState = { phase: 0 };
+
+                    gsap.to(motionState, {
+                        phase: Math.PI * 2,
+                        duration: 2.8,
+                        ease: "none",
+                        repeat: -1,
+                        onUpdate: () => {
+                            line.setAttribute("points", buildWavePoints(motionState.phase));
+                        },
+                    });
+
+                    gsap.fromTo(
+                        line,
+                        { autoAlpha: 0.65 },
+                        {
+                            autoAlpha: 1,
+                            duration: 1.2,
+                            repeat: -1,
+                            yoyo: true,
+                            ease: "sine.inOut",
+                        }
+                    );
+                }
+            );
+        },
+        { scope: containerRef }
+    );
 
     return (
-        <main className="relative min-h-screen overflow-hidden bg-[#0392ea]">
+        <main 
+            ref={containerRef} 
+            className={`bg-[#0392ea] ${
+                isOverlay 
+                ? "fixed inset-0 z-[9999]" 
+                : "relative min-h-screen overflow-hidden"
+            }`}
+        >
             <div className="absolute left-1/2 top-1/2 h-[96.22px] w-[192.44px] -translate-x-1/2 -translate-y-1/2">
                 <svg
                     viewBox={`0 0 ${WIDTH} ${HEIGHT}`}

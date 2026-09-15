@@ -24,6 +24,8 @@
 | `title` | `varchar` |  |
 | `description` | `text` |  |
 | `tag` | `varchar` |  |
+| `status` | `varchar` |  Nullable |
+| `image_url` | `text` |  Nullable |
 | `created_at` | `timestamptz` |  |
 | `updated_at` | `timestamptz` |  |
 
@@ -35,13 +37,14 @@
 |------|------|-------------|
 | `id` | `uuid` | Primary |
 | `title` | `varchar` |  |
-| `description` | `text` | Nullable |
-| `image` | `text` |  |
+| `type` | `varchar` | Default `'image'` |
+| `link` | `text` |  |
 | `created_at` | `timestamptz` |  |
 | `updated_at` | `timestamptz` |  |
-| `width` | `int4` |  |
-| `height` | `int4` |  |
+| `width` | `int4` | Nullable |
+| `height` | `int4` | Nullable |
 | `aspect_ratio` | `numeric` |  Nullable |
+| `description` | `text` |  Nullable |
 
 ## Table `experience`
 
@@ -110,7 +113,7 @@
 | `message` | `text` |  Nullable |
 | `requested_at` | `timestamp` |  Nullable |
 
-## Table `project_details`
+## Table `project_sections`
 
 ### Columns
 
@@ -118,18 +121,22 @@
 |------|------|-------------|
 | `id` | `uuid` | Primary |
 | `project_id` | `uuid` |  |
-| `section1_title` | `varchar` |  Nullable |
-| `section1_text` | `text` |  Nullable |
-| `section1_image_url` | `text` |  Nullable |
-| `section2_title` | `varchar` |  Nullable |
-| `section2_text` | `text` |  Nullable |
-| `section2_image_url` | `text` |  Nullable |
-| `section3_title` | `varchar` |  Nullable |
-| `section3_image_url` | `text` |  Nullable |
-| `created_at` | `timestamp` |  Nullable |
-| `updated_at` | `timestamp` |  Nullable |
+| `sequence_order` | `int4` |  |
+| `title` | `varchar` |  Nullable |
+| `content_text` | `text` |  Nullable |
+| `image_url` | `text` |  Nullable |
+| `created_at` | `timestamptz` |  |
+| `updated_at` | `timestamptz` |  |
 
 ## RLS Policies
+
+### `designs`
+
+| Policy | Command | Roles | Action | USING | WITH CHECK |
+|--------|---------|-------|--------|-------|------------|
+| `Allow anonymous inserts` | INSERT | anon | PERMISSIVE | — | `true` |
+| `Allow insert on designs for service role` | INSERT | service_role | PERMISSIVE | — | `true` |
+| `Allow public read access on designs` | SELECT | public | PERMISSIVE | `true` | — |
 
 ### `experience`
 
@@ -143,14 +150,6 @@
 |--------|---------|-------|--------|-------|------------|
 | `Allow only authenticated users to view submissions` | SELECT | authenticated | PERMISSIVE | `true` | — |
 | `Allow public insert access on contact_submissions` | INSERT | public | PERMISSIVE | — | `true` |
-
-### `designs`
-
-| Policy | Command | Roles | Action | USING | WITH CHECK |
-|--------|---------|-------|--------|-------|------------|
-| `Allow anonymous inserts` | INSERT | anon | PERMISSIVE | — | `true` |
-| `Allow insert on designs for service role` | INSERT | service_role | PERMISSIVE | — | `true` |
-| `Allow public read access on designs` | SELECT | public | PERMISSIVE | `true` | — |
 
 ### `stats`
 
@@ -176,15 +175,15 @@
 |--------|---------|-------|--------|-------|------------|
 | `Allow public insert resume requests` | INSERT | public | PERMISSIVE | — | `true` |
 
-### `project_details`
-
-| Policy | Command | Roles | Action | USING | WITH CHECK |
-|--------|---------|-------|--------|-------|------------|
-| `Allow public read` | SELECT | public | PERMISSIVE | `true` | — |
-
 ### `projects`
 
 | Policy | Command | Roles | Action | USING | WITH CHECK |
 |--------|---------|-------|--------|-------|------------|
 | `Allow public read access on projects` | SELECT | public | PERMISSIVE | `true` | — |
+
+### `project_sections`
+
+| Policy | Command | Roles | Action | USING | WITH CHECK |
+|--------|---------|-------|--------|-------|------------|
+| `Allow public read access on project_sections` | SELECT | public | PERMISSIVE | `true` | — |
 

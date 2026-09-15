@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CloseIcon } from "@/lib/constants";
-import { supabase, ProjectDetail } from "@/lib/supabase";
+import { supabase, ProjectSection } from "@/lib/supabase";
 
 type CaseStudyDetailSheetProps = {
     open: boolean;
@@ -20,7 +20,7 @@ export function CaseStudyDetailSheet({
     description,
     onClose,
 }: CaseStudyDetailSheetProps) {
-    const [caseStudyDetail, setCaseStudyDetail] = useState<ProjectDetail | null>(null);
+    const [sections, setSections] = useState<ProjectSection[]>([]);
     const [isLoadingDetail, setIsLoadingDetail] = useState(false);
 
     useEffect(() => {
@@ -47,7 +47,7 @@ export function CaseStudyDetailSheet({
 
     useEffect(() => {
         if (!open || !caseStudyId) {
-            setCaseStudyDetail(null);
+            setSections([]);
             return;
         }
 
@@ -56,25 +56,23 @@ export function CaseStudyDetailSheet({
         const loadCaseStudyDetail = async () => {
             setIsLoadingDetail(true);
 
-            // We're querying project_details table using the case study ID, assuming they share details table
-            // or you can change this to case_study_details if you have a separate table.
             const { data, error } = await supabase
-                .from("project_details")
+                .from("project_sections")
                 .select("*")
                 .eq("project_id", caseStudyId)
-                .maybeSingle();
+                .order("sequence_order", { ascending: true });
 
             if (!isMounted) {
                 return;
             }
 
-            if (error) {
-                setCaseStudyDetail(null);
+            if (error || !data) {
+                setSections([]);
                 setIsLoadingDetail(false);
                 return;
             }
 
-            setCaseStudyDetail((data as ProjectDetail | null) ?? null);
+            setSections(data as ProjectSection[]);
             setIsLoadingDetail(false);
         };
 
@@ -85,16 +83,7 @@ export function CaseStudyDetailSheet({
         };
     }, [open, caseStudyId]);
 
-    const section1Title = caseStudyDetail?.section1_title || "Overview";
-    const section1Text = caseStudyDetail?.section1_text || description;
-    const section1ImageUrl = caseStudyDetail?.section1_image_url;
-
-    const section2Title = caseStudyDetail?.section2_title || "Process";
-    const section2Text = caseStudyDetail?.section2_text || description;
-    const section2ImageUrl = caseStudyDetail?.section2_image_url;
-
-    const section3Title = caseStudyDetail?.section3_title || "Result";
-    const section3ImageUrl = caseStudyDetail?.section3_image_url;
+    const mainImageUrl = sections.find((s) => s.image_url)?.image_url || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80';
 
     return (
         <AnimatePresence>
@@ -141,30 +130,33 @@ export function CaseStudyDetailSheet({
                                 ) : null}
 
                                 <div className="mt-10 space-y-10 md:mt-12 md:space-y-12">
-                                    <section>
-                                        <h3 className="text-2xl font-semibold leading-tight text-[#444]">
-                                            {section1Title}
-                                        </h3>
-                                        <p className="mt-4 text-base leading-relaxed text-[#444]/95 md:text-lg">
-                                            {section1Text}
-                                        </p>
-                                    </section>
-
-                                    <section>
-                                        <h3 className="text-2xl font-semibold leading-tight text-[#444]">
-                                            {section2Title}
-                                        </h3>
-                                        <p className="mt-4 text-base leading-relaxed text-[#444]/95 md:text-lg">
-                                            {section2Text}
-                                        </p>
-                                    </section>
-                                    
-                                    <section>
-                                        <h3 className="text-2xl font-semibold leading-tight text-[#444]">
-                                            {section3Title}
-                                        </h3>
-                                        {/* Result section usually has the image, but since we are moving it to the right, we'll just keep the title if they want to add text later */}
-                                    </section>
+                                    {sections.length > 0 ? (
+                                        sections.map((section, idx) => (
+                                            <section key={section.id || idx}>
+                                                {section.title ? (
+                                                    <h3 className="text-2xl font-semibold leading-tight text-[#444]">
+                                                        {section.title}
+                                                    </h3>
+                                                ) : null}
+                                                {section.content_text ? (
+                                                    <p className="mt-4 text-base leading-relaxed text-[#444]/95 md:text-lg">
+                                                        {section.content_text}
+                                                    </p>
+                                                ) : null}
+                                            </section>
+                                        ))
+                                    ) : !isLoadingDetail ? (
+                                        <>
+                                            <section>
+                                                <h3 className="text-2xl font-semibold leading-tight text-[#444]">
+                                                    Overview
+                                                </h3>
+                                                <p className="mt-4 text-base leading-relaxed text-[#444]/95 md:text-lg">
+                                                    {description}
+                                                </p>
+                                            </section>
+                                        </>
+                                    ) : null}
                                 </div>
                             </div>
                         </div>
@@ -181,7 +173,7 @@ export function CaseStudyDetailSheet({
                             </button>
                             <div
                                 className="h-full w-full bg-[#f0f0f0] bg-cover bg-center"
-                                style={{ backgroundImage: `url(${section1ImageUrl || section3ImageUrl || section2ImageUrl || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80'})` }}
+                                style={{ backgroundImage: `url(${mainImageUrl})` }}
                                 role="img"
                                 aria-label="Case study main picture"
                             />
@@ -192,3 +184,4 @@ export function CaseStudyDetailSheet({
         </AnimatePresence>
     );
 }
+

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { CloseIcon } from "@/lib/constants";
+import { getYouTubeVideoId } from "@/lib/utils";
 
 type DesignModalProps = {
   open: boolean;
@@ -11,9 +12,11 @@ type DesignModalProps = {
   design: {
     title: string;
     description?: string | null;
-    image: string;
-    width?: number;
-    height?: number;
+    type?: "image" | "video";
+    link?: string;
+    image?: string;
+    width?: number | null;
+    height?: number | null;
   } | null;
 };
 
@@ -32,9 +35,15 @@ export function DesignModal({ open, onClose, design }: DesignModalProps) {
     };
   }, [open, onClose]);
 
+  const mediaUrl = design?.link || design?.image || "";
+  const isVideo = design?.type === "video";
+  const youtubeId = isVideo ? getYouTubeVideoId(mediaUrl) : null;
+
   const designRatio =
     design && design.width && design.height && design.height > 0
       ? design.width / design.height
+      : isVideo
+      ? 16 / 9
       : 2 / 3;
 
   return (
@@ -61,7 +70,7 @@ export function DesignModal({ open, onClose, design }: DesignModalProps) {
             role="dialog"
             aria-modal="true"
             aria-label={`${design.title} details`}
-            className="relative mt-4 flex w-full max-w-2xl flex-col items-center overflow-hidden rounded-3xl px-6 py-12 text-center sm:mt-8 sm:px-10 sm:py-16"
+            className="relative mt-4 flex w-full max-w-3xl flex-col items-center overflow-hidden rounded-3xl px-6 py-12 text-center sm:mt-8 sm:px-10 sm:py-16"
             initial={{ scale: 0.96, y: 18, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.96, y: 18, opacity: 0 }}
@@ -70,30 +79,41 @@ export function DesignModal({ open, onClose, design }: DesignModalProps) {
           >
 
             {/* Title Area */}
-            <h2 className="font-serif text-5xl md:text-6xl font-light text-white mb-6 tracking-wide">
+            <h2 className="font-serif text-5xl md:text-6xl font-light text-white tracking-wide">
               {design.title}
             </h2>
 
-            {/* Description Area */}
-            <div className="flex flex-col items-center px-4 max-w-lg">
-              <p className="font-sans text-sm md:text-base text-neutral-400 leading-relaxed">
-                {design.description || "No description provided."}
-              </p>
-            </div>
-
-            {/* Image Placeholder */}
+            {/* Media Container */}
             <div
-              className="relative w-full max-w-xs sm:max-w-sm md:max-w-md bg-[#e8e8e8] rounded-3xl overflow-hidden shadow-lg mt-10"
+              className="relative w-full max-w-xs sm:max-w-md md:max-w-lg bg-black/20 rounded-3xl overflow-hidden shadow-2xl mt-10"
               style={{ aspectRatio: designRatio, width: "100%" }}
             >
-              <Image
-                src={design.image}
-                alt={design.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 24rem"
-                unoptimized
-              />
+              {youtubeId ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=0`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="h-full w-full border-0 object-cover"
+                />
+              ) : isVideo ? (
+                <video
+                  src={mediaUrl}
+                  controls
+                  autoPlay
+                  loop
+                  playsInline
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Image
+                  src={mediaUrl}
+                  alt={design.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 32rem"
+                  unoptimized
+                />
+              )}
             </div>
           </motion.div>
         </motion.div>
