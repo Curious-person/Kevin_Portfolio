@@ -99,7 +99,7 @@ export function ResumeModal({ open, onClose }: ResumeModalProps) {
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="resume-modal-title"
-                        className="relative flex w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-white shadow-2xl"
+                        className="relative flex w-full max-w-lg max-h-[calc(100vh-4rem)] flex-col overflow-y-auto overflow-x-hidden rounded-3xl bg-white shadow-2xl [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                         initial={{ scale: 0.96, y: 18 }}
                         animate={{ scale: 1, y: 0 }}
                         exit={{ scale: 0.96, y: 18 }}
