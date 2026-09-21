@@ -24,10 +24,10 @@
 | `title` | `varchar` |  |
 | `description` | `text` |  |
 | `tag` | `varchar` |  |
-| `status` | `varchar` |  Nullable |
-| `image_url` | `text` |  Nullable |
 | `created_at` | `timestamptz` |  |
 | `updated_at` | `timestamptz` |  |
+| `status` | `varchar` |  Nullable |
+| `image_url` | `text` |  Nullable |
 
 ## Table `designs`
 
@@ -37,14 +37,14 @@
 |------|------|-------------|
 | `id` | `uuid` | Primary |
 | `title` | `varchar` |  |
-| `type` | `varchar` | Default `'image'` |
 | `link` | `text` |  |
 | `created_at` | `timestamptz` |  |
 | `updated_at` | `timestamptz` |  |
-| `width` | `int4` | Nullable |
-| `height` | `int4` | Nullable |
+| `width` | `int4` |  |
+| `height` | `int4` |  |
 | `aspect_ratio` | `numeric` |  Nullable |
 | `description` | `text` |  Nullable |
+| `type` | `text` |  |
 
 ## Table `experience`
 
@@ -157,12 +157,6 @@
 |--------|---------|-------|--------|-------|------------|
 | `Allow public read access on stats` | SELECT | public | PERMISSIVE | `true` | — |
 
-### `case_studies`
-
-| Policy | Command | Roles | Action | USING | WITH CHECK |
-|--------|---------|-------|--------|-------|------------|
-| `Allow public read access on case_studies` | SELECT | public | PERMISSIVE | `true` | — |
-
 ### `resumes`
 
 | Policy | Command | Roles | Action | USING | WITH CHECK |
@@ -174,6 +168,12 @@
 | Policy | Command | Roles | Action | USING | WITH CHECK |
 |--------|---------|-------|--------|-------|------------|
 | `Allow public insert resume requests` | INSERT | public | PERMISSIVE | — | `true` |
+
+### `case_studies`
+
+| Policy | Command | Roles | Action | USING | WITH CHECK |
+|--------|---------|-------|--------|-------|------------|
+| `Allow public read access on case_studies` | SELECT | public | PERMISSIVE | `true` | — |
 
 ### `projects`
 

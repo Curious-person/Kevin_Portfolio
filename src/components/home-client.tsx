@@ -1,14 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { PortfolioNav } from "@/components/portfolio-nav";
-
-// Register useGSAP plugin
-gsap.registerPlugin(useGSAP);
+import { InteractiveGridBackground } from "@/components/interactive-grid-bg";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SkillsTicker } from "@/components/skills-ticker";
@@ -49,76 +45,7 @@ export function HomeClient({
   const [activeTab, setActiveTab] = useState<PortfolioTab>("projects");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<CaseStudy | null>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isHoveringInteractive, setIsHoveringInteractive] = useState(false);
-  const [isClicked, setIsClicked] = useState(false);
 
-  const vinylRef = useRef<HTMLImageElement>(null);
-  const tweenRef = useRef<gsap.core.Tween | null>(null);
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const springConfig = { damping: 25, stiffness: 250, mass: 0.5 };
-  const cursorX = useSpring(mouseX, springConfig);
-  const cursorY = useSpring(mouseY, springConfig);
-
-  useGSAP(() => {
-    if (isHovered && vinylRef.current) {
-      const tween = gsap.to(vinylRef.current, {
-        rotation: 360,
-        duration: 1.8, // Normal vinyl speed (~33.3 RPM)
-        repeat: -1,
-        ease: "none",
-      });
-      tweenRef.current = tween;
-
-      if (isClicked) {
-        tween.pause();
-      }
-
-      return () => {
-        tween.kill();
-      };
-    }
-  }, { dependencies: [isHovered] });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left);
-    mouseY.set(e.clientY - rect.top);
-
-    const target = e.target as HTMLElement;
-    const isInteractive = target.closest("a, button, [role='button'], input, select") !== null;
-    setIsHoveringInteractive(isInteractive);
-  };
-
-  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    setIsHovered(true);
-    const rect = e.currentTarget.getBoundingClientRect();
-    mouseX.set(e.clientX - rect.left);
-    mouseY.set(e.clientY - rect.top);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setIsHoveringInteractive(false);
-    setIsClicked(false);
-  };
-
-  const handleMouseDown = () => {
-    setIsClicked(true);
-    if (tweenRef.current) {
-      tweenRef.current.pause();
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsClicked(false);
-    if (tweenRef.current) {
-      tweenRef.current.play();
-    }
-  };
 
   // Map backend stats data to correct layout structure
   // Ensuring the ids match the tabs ('projects', 'designs', 'case_studies')
@@ -134,38 +61,19 @@ export function HomeClient({
       {/* Hero Section */}
       <section
         id="home"
-        className="relative bg-[#0392ea] text-white cursor-none overflow-hidden"
-        onMouseMove={handleMouseMove}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
+        className="relative bg-[#0392ea] text-white overflow-hidden"
       >
-        {isHovered && (
-          <motion.div
-            className="pointer-events-none absolute z-50 -translate-x-1/2 -translate-y-1/2"
-            style={{
-              left: cursorX,
-              top: cursorY,
-            }}
-            animate={{
-              scale: isClicked ? 0.85 : isHoveringInteractive ? 1.3 : 1,
-            }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          >
-            <img
-              ref={vinylRef}
-              src="/images/vinyl.png"
-              alt="Vinyl Record Cursor"
-              className="h-12 w-12 object-contain select-none pointer-events-none"
-            />
-          </motion.div>
-        )}
-        <div className="mx-auto max-w-432 px-4 pb-16 pt-28 sm:px-8 lg:px-10">
-          <PortfolioNav active="home" variant="white" />
+        <InteractiveGridBackground />
+
+        <div className="relative z-10 mx-auto max-w-432 px-4 pb-16 pt-28 sm:px-8 lg:px-10 pointer-events-none">
+          <div className="pointer-events-auto">
+            <PortfolioNav active="home" variant="white" />
+          </div>
 
           <div className="mx-auto flex max-w-275 flex-col items-center text-center">
-            <Badge className="mt-24">Hi, I&apos;m Kevin</Badge>
+            <div className="pointer-events-auto">
+              <Badge className="mt-24">Hi, I&apos;m Kevin</Badge>
+            </div>
 
             <h1 className="mt-6 font-serif text-[clamp(4rem,9vw,7.25rem)] leading-[0.95] tracking-tight">
               Design Engineer
@@ -176,7 +84,7 @@ export function HomeClient({
               from a grounded perspective.
             </p>
 
-            <div className="mt-24 w-full">
+            <div className="mt-24 w-full pointer-events-auto">
               <SkillsTicker skills={skills} />
             </div>
           </div>
