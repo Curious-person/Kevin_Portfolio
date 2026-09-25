@@ -34,6 +34,7 @@ export interface Project {
   description: string;
   tag: string;
   image_url?: string | null;
+  project_link?: string | null;
   created_at: string;
   updated_at: string;
 }
