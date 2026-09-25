@@ -8,7 +8,8 @@ import { useGSAP } from "@gsap/react";
 gsap.registerPlugin(useGSAP);
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { CloseIcon } from "@/lib/constants";
+import { CloseIcon, ArrowRightIcon } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
 import { supabase, ProjectSection, ProjectWithSections } from "@/lib/supabase";
 
 type ProjectDetailSheetProps = {
@@ -116,6 +117,7 @@ export function ProjectDetailSheet({
     onClose,
 }: ProjectDetailSheetProps) {
     const [sections, setSections] = useState<ProjectSection[]>([]);
+    const [projectLink, setProjectLink] = useState<string | null>(null);
     const [isLoadingDetail, setIsLoadingDetail] = useState(false);
 
     useEffect(() => {
@@ -143,6 +145,7 @@ export function ProjectDetailSheet({
     useEffect(() => {
         if (!open || !projectId) {
             setSections([]);
+            setProjectLink(null);
             return;
         }
 
@@ -164,6 +167,7 @@ export function ProjectDetailSheet({
 
             if (error || !data) {
                 setSections([]);
+                setProjectLink(null);
                 setIsLoadingDetail(false);
                 return;
             }
@@ -171,6 +175,7 @@ export function ProjectDetailSheet({
             const projectData = data as unknown as ProjectWithSections;
             const fetchedSections = projectData.project_sections ?? [];
             setSections(fetchedSections);
+            setProjectLink(projectData.project_link ?? null);
             setIsLoadingDetail(false);
         };
 
@@ -343,6 +348,19 @@ export function ProjectDetailSheet({
                                         </section>
                                     ) : null}
                                 </div>
+
+                                {projectLink && !isLoadingDetail ? (
+                                    <div className="mt-16 flex w-full justify-center pb-8 sm:mt-24">
+                                        <Button
+                                            render={<a href={projectLink} target="_blank" rel="noopener noreferrer" />}
+                                            nativeButton={false}
+                                            className="h-10 gap-2 rounded-md bg-[#2e3441] px-4 text-sm font-normal text-white transition-transform hover:-translate-y-0.5 hover:bg-[#2e3441]/90"
+                                        >
+                                            Visit Live Site
+                                            <ArrowRightIcon className="h-5 w-5" />
+                                        </Button>
+                                    </div>
+                                ) : null}
                             </div>
                         </div>
                     </motion.div>

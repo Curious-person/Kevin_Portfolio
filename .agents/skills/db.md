@@ -12,6 +12,7 @@
 | `created_at` | `timestamptz` |  |
 | `updated_at` | `timestamptz` |  |
 | `image_url` | `text` |  Nullable |
+| `project_link` | `text` |  Nullable |
 
 ## Table `case_studies`
 
